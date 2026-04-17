@@ -14,7 +14,7 @@ import { focusManager } from "@tanstack/react-query";
 import { Login } from "./screens/Login";
 import { Profile } from "./screens/Profile";
 import { Register } from "./screens/Register";
-import { Coffee, Plus, Dice5 } from "lucide-react-native";
+import { Coffee, Plus, RotateCw } from "lucide-react-native";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -42,7 +42,7 @@ function AppTabs() {
   const getSideActionConfig = ({ routeName, navigation }) => {
     if (routeName === "Accueil") {
       return {
-        Icon: Dice5,
+        Icon: RotateCw,
         onPress: () => {},
       };
     }
