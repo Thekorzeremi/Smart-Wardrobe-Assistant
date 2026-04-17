@@ -1,5 +1,6 @@
 import { Home, Shirt, User, Coffee } from "lucide-react-native";
 import { Pressable, Text, View } from "react-native";
+import { BlurView } from "expo-blur";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors, elements } from "../theme";
 
@@ -11,6 +12,7 @@ const ICONS = {
 
 const ACTIVE_ICON_COLOR = colors.glassTab.iconActive;
 const INACTIVE_ICON_COLOR = colors.glassTab.iconInactive;
+const SIDE_ICON_COLOR = colors.glassTab.sideIcon;
 
 export function GlassTabBar({ state, descriptors, navigation }) {
   const insets = useSafeAreaInsets();
@@ -18,7 +20,12 @@ export function GlassTabBar({ state, descriptors, navigation }) {
   return (
     <View style={[elements.glassTabWrapper, { bottom: Math.max(insets.bottom, 10) }]}>
       <View style={elements.glassTabMainPill}>
-        <View style={elements.glassTabShine} />
+        <BlurView
+          intensity={colors.glassTab.blurMainIntensity}
+          tint={colors.glassTab.blurTint}
+          style={elements.glassTabBlur}
+        />
+        <View pointerEvents="none" style={elements.glassTabInnerBorder} />
         {state.routes.map((route, index) => {
           const isFocused = state.index === index;
           const Icon = ICONS[route.name] ?? Home;
@@ -71,8 +78,13 @@ export function GlassTabBar({ state, descriptors, navigation }) {
       </View>
 
       <Pressable style={elements.glassTabSideAction}>
-        <View style={elements.glassTabSideActionShine} />
-        <Coffee size={20} strokeWidth={2.1} color={ACTIVE_ICON_COLOR} />
+        <BlurView
+          intensity={colors.glassTab.blurSideIntensity}
+          tint={colors.glassTab.blurTint}
+          style={elements.glassTabSideActionBlur}
+        />
+        <View pointerEvents="none" style={elements.glassTabSideActionInnerBorder} />
+        <Coffee size={20} strokeWidth={2.1} color={SIDE_ICON_COLOR} />
       </Pressable>
     </View>
   );
