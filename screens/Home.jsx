@@ -1,10 +1,13 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView, Text, View, ActivityIndicator } from "react-native";
 import { HomeHeader } from "../components/HomeHeader";
 import { WeatherCarousel } from "../components/WeatherCarousel";
 import { elements } from "../theme";
+import { useSuggestion } from '../hooks/use-suggest';
 
 export const Home = () => {
+  const { data: suggestion, isLoading, error, refresh } = useSuggestion();
+
   return (
     <LinearGradient
       colors={["rgba(0, 45, 101, 0.8)", "rgba(0, 9, 20, 0.8)"]}
@@ -17,10 +20,12 @@ export const Home = () => {
 
         <View style={elements.homeCard}>
           <Text style={elements.homeCardTitle}>Suggestion du jour</Text>
-          <Text style={elements.homeCardText}>
-            Il fait doux aujourd'hui. Pense a une tenue legere avec une veste
-            fine.
-          </Text>
+          
+          {isLoading && <ActivityIndicator color="white" />}
+          {error && <Text style={elements.homeCardText}>Erreur : {error.message}</Text>}
+          {suggestion && (
+            <Text style={elements.homeCardText}>{suggestion.recommendation}</Text>
+          )}
         </View>
 
         <View style={elements.homeCard}>
