@@ -3,7 +3,7 @@ import { Layout } from "../components/Layout";
 import { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
 import { useAuth } from "../contexts/AuthContext";
-import { authStyles } from "../styles/app.styles";
+import { authStyles } from "../theme";
 
 export const Register = ({ navigation }) => {
   const [email, setEmail] = useState("");
