@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "../utils/supabase-client";
+import { supabase } from "./supabase";
 
 export function useGetClothesQuery() {
 	return useQuery({
