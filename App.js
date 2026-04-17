@@ -2,6 +2,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { GlassTabBar } from "./components/GlassTabBar";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { Home } from "./screens/Home";
 import { Profile } from "./screens/Profile";
 import { Wardrobe } from "./screens/Wardrobe";
@@ -11,9 +12,9 @@ import { useEffect } from 'react'
 import { AppState, Platform } from 'react-native'
 import { focusManager } from '@tanstack/react-query'
 import { Login } from "./screens/Login";
+import { Profile } from "./screens/Profile";
 import { Register } from "./screens/Register";
-import { AuthProvider, useAuth } from "./contexts/AuthContext";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { Wardrobe } from "./screens/Wardrobe";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
