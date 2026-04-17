@@ -40,11 +40,7 @@ function AuthStack() {
 function RootNavigator() {
 	const { user, loading } = useAuth();
 	if (loading) return null; // Tu peux ajouter un écran de chargement
-	return (
-		<NavigationContainer>
-			{user ? <AppTabs /> : <AuthStack />}
-		</NavigationContainer>
-	);
+	return user ? <AppTabs /> : <AuthStack />;
 }
 
 function AppTabs() {
