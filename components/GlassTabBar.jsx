@@ -19,6 +19,7 @@ const DRAG_ACTIVATION_PX = 8;
 export function GlassTabBar({ state, descriptors, navigation }) {
   const insets = useSafeAreaInsets();
   const [pillWidth, setPillWidth] = useState(0);
+  const [visualActiveIndex, setVisualActiveIndex] = useState(state.index);
   const mainPillRef = useRef(null);
 
   const translateX = useRef(new Animated.Value(0)).current;
@@ -29,6 +30,7 @@ export function GlassTabBar({ state, descriptors, navigation }) {
   const isDraggingRef = useRef(false);
   const dragBubbleXRef = useRef(0);
   const pillPageXRef = useRef(0);
+  const visualActiveIndexRef = useRef(state.index);
 
   const tabWidth = useMemo(() => {
     if (pillWidth <= 0 || state.routes.length === 0) {
@@ -47,6 +49,15 @@ export function GlassTabBar({ state, descriptors, navigation }) {
 
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
+  const setVisualActiveIndexSafe = (index) => {
+    if (visualActiveIndexRef.current === index) {
+      return;
+    }
+
+    visualActiveIndexRef.current = index;
+    setVisualActiveIndex(index);
+  };
+
   const setBubbleFromLocation = (locationX) => {
     if (tabWidth <= 0) {
       return;
@@ -56,6 +67,9 @@ export function GlassTabBar({ state, descriptors, navigation }) {
     const nextX = clamp(locationX - tabWidth / 2, 0, maxX);
     dragBubbleXRef.current = nextX;
     translateX.setValue(nextX);
+
+    const nearestIndex = clamp(Math.round(nextX / tabWidth), 0, state.routes.length - 1);
+    setVisualActiveIndexSafe(nearestIndex);
   };
 
   const anchorBubbleToIndex = (index, animated = true) => {
@@ -65,6 +79,7 @@ export function GlassTabBar({ state, descriptors, navigation }) {
 
     const targetX = index * tabWidth;
     dragBubbleXRef.current = targetX;
+    setVisualActiveIndexSafe(index);
 
     if (!animated) {
       translateX.setValue(targetX);
@@ -193,12 +208,14 @@ export function GlassTabBar({ state, descriptors, navigation }) {
           ]).start(() => {
             activeIndexRef.current = targetIndex;
             dragBubbleXRef.current = targetX;
+            setVisualActiveIndexSafe(targetIndex);
           });
 
           navigateToIndex(targetIndex);
         },
         onPanResponderTerminate: () => {
           isDraggingRef.current = false;
+          setVisualActiveIndexSafe(state.index);
           Animated.parallel([
             Animated.timing(bubbleScaleY, {
               toValue: 1,
@@ -289,6 +306,7 @@ export function GlassTabBar({ state, descriptors, navigation }) {
     if (activeIndexRef.current === state.index) {
       translateX.setValue(targetX);
       dragBubbleXRef.current = targetX;
+      setVisualActiveIndexSafe(state.index);
       return;
     }
 
@@ -351,6 +369,7 @@ export function GlassTabBar({ state, descriptors, navigation }) {
     runningAnimationRef.current = sequence;
     sequence.start(() => {
       activeIndexRef.current = state.index;
+      setVisualActiveIndexSafe(state.index);
       runningAnimationRef.current = null;
     });
   }, [bubbleScaleX, bubbleScaleY, state.index, tabWidth, translateX]);
@@ -392,7 +411,7 @@ export function GlassTabBar({ state, descriptors, navigation }) {
         )}
         <View pointerEvents="none" style={elements.glassTabInnerBorder} />
         {state.routes.map((route, index) => {
-          const isFocused = state.index === index;
+          const isFocused = visualActiveIndex === index;
           const Icon = ICONS[route.name] ?? Home;
 
           const onPress = () => {
