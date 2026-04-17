@@ -1,19 +1,44 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View , TouchableOpacity, Alert} from "react-native";
+import { useAuth } from "../contexts/AuthContext";
+export const Profile = ({route}) => {
+  const { user, signOut } = useAuth();
+  
+  const fullName = user?.email?.split('@')[0] || "Utilisateur";
+  const email = user?.email || "";
+  const firstLetter = fullName.charAt(0).toUpperCase();
 
-export const Profile = () => {
+  const handleLogout = () => {
+    Alert.alert("Déconnexion", "Voulez-vous vraiment vous déconnecter ?", [
+      { text: "Annuler", style: "cancel" },
+      { text: "OK", onPress: async () => {
+        try {
+            await signOut();
+          } catch (error) {
+            Alert.alert("Erreur", error.message);
+          }
+      } },
+    ]);
+  };
   return (
     <View style={styles.container}>
       <View style={styles.avatar}>
-        <Text style={styles.avatarText}>R</Text>
+        <Text style={styles.avatarText}>{firstLetter}</Text>
       </View>
-      <Text style={styles.name}>Remi</Text>
+      <Text style={styles.name}>{fullName}</Text>
+      <Text style={styles.email}>{email}</Text>
       <Text style={styles.city}>Berlin, Germany</Text>
-
       <View style={styles.menu}>
-        <Text style={styles.menuItem}>Modifier le profil</Text>
-        <Text style={styles.menuItem}>Notifications</Text>
-        <Text style={styles.logout}>Deconnexion</Text>
+        {/* <TouchableOpacity onPress={() => route.navigate("ProfileUpdate")}>
+          <Text style={styles.menuItem}>Modifier le profil</Text>
+        </TouchableOpacity> */}
+        {/* <TouchableOpacity onPress={() => Alert.alert("Notifications", "Fonctionnalité à venir")}>
+          <Text style={styles.menuItem}>Notifications</Text>
+        </TouchableOpacity> */}
+        <TouchableOpacity onPress={handleLogout}>
+          <Text style={styles.logout}>Déconnexion</Text>
+        </TouchableOpacity>
       </View>
+      
     </View>
   );
 };
