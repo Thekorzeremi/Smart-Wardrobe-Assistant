@@ -2,9 +2,9 @@
 
 ## H0 DEV4
 
-- [ ] Créer un nouveau fichier thème à la racine pour centraliser les couleurs, les transparences et les effets glass. Mettre les couleurs de fond, les blancs cassés, les bordures translucides, les ombres et les rayons de bordure utilisés partout.
+- [x] Créer un nouveau fichier thème à la racine pour centraliser les couleurs, les transparences et les effets glass. Mettre les couleurs de fond, les blancs cassés, les bordures translucides, les ombres et les rayons de bordure utilisés partout.
 
-- [ ] Reprendre GlassTabBar.jsx et le terminer comme barre d’onglets finale: icônes cohérentes, état actif/inactif, style glass uniforme, et adaptation à l’espace bas de l’écran.
+- [x] Reprendre GlassTabBar.jsx et le terminer comme barre d’onglets finale: icônes cohérentes, état actif/inactif, style glass uniforme, et adaptation à l’espace bas de l’écran.
 
 - [ ] Recomposer App.js pour que la racine soit propre: un `NavigationContainer`, un `AuthProvider` autour de la navigation, puis la navigation principale de l’app.
 
