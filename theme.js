@@ -563,7 +563,10 @@ export const elements = StyleSheet.create({
   },
   wardrobeModalBackdrop: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.45)",
+    backgroundColor: "rgba(255, 255, 255, 1)",
+  },
+  wardrobeModalDismissArea: {
+    ...StyleSheet.absoluteFillObject,
   },
   wardrobeModalContent: {
     position: "absolute",
@@ -577,8 +580,77 @@ export const elements = StyleSheet.create({
     borderBottomRightRadius: 0,
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.14)",
-    backgroundColor: "rgba(20,24,40,0.85)",
+    backgroundColor: "rgba(0, 0, 0, 1)",
     overflow: "hidden",
+  },
+  wardrobeModalHeader: {
+    paddingHorizontal: 16,
+    paddingTop: 14,
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(255,255,255,0.1)",
+    gap: 10,
+  },
+  wardrobeModalTitle: {
+    color: "#f3f5ff",
+    fontSize: 20,
+    fontWeight: "700",
+  },
+  wardrobeModalActions: {
+    flexDirection: "row",
+    gap: 10,
+  },
+  wardrobeModalActionButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+    borderRadius: 12,
+    backgroundColor: "rgba(120,142,255,0.2)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.18)",
+  },
+  wardrobeModalActionDelete: {
+    backgroundColor: "rgba(255,95,105,0.2)",
+  },
+  wardrobeModalActionText: {
+    color: "#f3f5ff",
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  wardrobeModalBody: {
+    flex: 1,
+  },
+  wardrobeModalBodyContent: {
+    padding: 16,
+    gap: 14,
+    paddingBottom: 28,
+  },
+  wardrobeModalImage: {
+    width: "100%",
+    height: 220,
+    borderRadius: 14,
+  },
+  wardrobeModalInfoList: {
+    gap: 10,
+  },
+  wardrobeModalInfoRow: {
+    backgroundColor: "rgba(255,255,255,0.07)",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.12)",
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    gap: 4,
+  },
+  wardrobeModalInfoKey: {
+    color: "rgba(243,245,255,0.72)",
+    fontSize: 12,
+    textTransform: "uppercase",
+    letterSpacing: 0.6,
+  },
+  wardrobeModalInfoValue: {
+    color: "#f3f5ff",
+    fontSize: 15,
+    fontWeight: "500",
   },
   loadingContainer: {
     flex: 1,

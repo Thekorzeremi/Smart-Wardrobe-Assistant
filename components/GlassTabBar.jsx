@@ -425,7 +425,7 @@ export function GlassTabBar({ state, descriptors, navigation, getSideActionConfi
   }, [bubbleScaleX, bubbleScaleY, state.index, tabWidth, translateX]);
 
   return (
-    <View style={[elements.glassTabWrapper, { bottom: Math.max(insets.bottom, 10) }]}>
+    <View style={[elements.glassTabWrapper, { bottom: Math.max(insets.bottom - 16, 6) }]}>
       <View
         ref={mainPillRef}
         style={elements.glassTabMainPill}
