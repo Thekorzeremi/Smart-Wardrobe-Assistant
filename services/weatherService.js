@@ -108,12 +108,7 @@ const formatWeatherResponse = (data, location) => {
 
 export const fetchWeather = async () => {
   const location = await getLocationAsync();
-  const url = `${API_BASE}
-?latitude=${location.coords.latitude}
-&longitude=${location.coords.longitude}
-&current=temperature_2m,weathercode,is_day,windspeed_10m
-&hourly=temperature_2m,relativehumidity_2m,apparent_temperature,windgusts_10m,precipitation,uv_index,visibility
-&timezone=auto`;
+  const url = `${API_BASE}?latitude=${location.coords.latitude}&longitude=${location.coords.longitude}&current_weather=true&hourly=relativehumidity_2m,apparent_temperature,windgusts_10m,precipitation,uv_index,visibility&timezone=auto`;
   const response = await fetch(url);
 
   if (!response.ok) {
