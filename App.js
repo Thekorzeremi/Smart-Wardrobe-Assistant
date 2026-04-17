@@ -15,6 +15,7 @@ import { Login } from "./screens/Login";
 import { Profile } from "./screens/Profile";
 import { Register } from "./screens/Register";
 import { Coffee, Plus, RotateCw } from "lucide-react-native";
+import { StatusBar } from "expo-status-bar";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -59,9 +60,9 @@ function AppTabs() {
         Icon: Coffee,
         onPress: () => {
           alert("Prendre un café", "Fonctionnalité à venir", [
-			{ text: "Annuler", style: "cancel" },
-			{ text: "OK", onPress: () => alert("Café pris ! Fonctionnalité à venir") },
-		  ]);
+            { text: "Annuler", style: "cancel" },
+            { text: "OK", onPress: () => alert("Café pris ! Fonctionnalité à venir") },
+          ]);
         },
       };
     }
@@ -113,6 +114,7 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <SafeAreaProvider>
         <AuthProvider>
+          <StatusBar style="light" />
           <NavigationContainer>
             <RootNavigator />
           </NavigationContainer>
