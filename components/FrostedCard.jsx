@@ -1,7 +1,7 @@
-import { StyleSheet, Text } from "react-native";
+import { StyleSheet, View } from "react-native";
 
-export default function FrostedCard() {
-  return <Text style={styles.title}>Liquid Glass UI</Text>;
+export default function FrostedCard({ children, style }) {
+  return <View style={[styles.card, style]}>{children}</View>;
 }
 
 const styles = StyleSheet.create({
