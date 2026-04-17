@@ -3,8 +3,8 @@ import { useAuth } from "../contexts/AuthContext";
 import { profileStyles } from "../styles/app.styles";
 import { Avatar } from "../components/Avatar";
 
-export const Profile = ({route}) => {
-  const { user, userData, signOut } = useAuth();
+export const Profile = ({navigation}) => {
+  const { user, userData, signOut, updateProfile } = useAuth();
   
   const username = userData?.username || user?.email?.split('@')[0] || "Utilisateur";
   const email = user?.email || "";
@@ -29,9 +29,9 @@ export const Profile = ({route}) => {
       <Text style={profileStyles.email}>{email}</Text>
       {location ? <Text style={profileStyles.city}>{location}</Text> : null}
       <View style={profileStyles.menu}>
-        {/* <TouchableOpacity onPress={() => route.navigate("ProfileUpdate")}>
+        <TouchableOpacity onPress={() => navigation.navigate("ProfileUpdate")}>
           <Text style={profileStyles.menuItem}>Modifier le profil</Text>
-        </TouchableOpacity> */}
+        </TouchableOpacity>
         {/* <TouchableOpacity onPress={() => Alert.alert("Notifications", "Fonctionnalité à venir")}>
           <Text style={profileStyles.menuItem}>Notifications</Text>
         </TouchableOpacity> */}
