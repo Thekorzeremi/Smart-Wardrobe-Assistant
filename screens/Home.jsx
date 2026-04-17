@@ -1,21 +1,9 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { ListFilter } from "lucide-react-native";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
-import { Button } from "../components/Button";
+import { HomeHeader } from "../components/HomeHeader";
 import { WeatherCarousel } from "../components/WeatherCarousel";
-import { useDate } from "../hooks/useDate";
-import { useWeather } from "../hooks/useWeather";
-import { Loading } from "./Loading";
 
 export const Home = () => {
-  const { data, isLoading, isError } = useWeather();
-  const { date } = useDate();
-  console.log(date);
-
-  const { city, country } = data ?? {};
-
-  if (isLoading) return <Loading />;
-
   return (
     <LinearGradient
       colors={["rgba(0, 45, 101, 0.8)", "rgba(0, 9, 20, 0.8)"]}
@@ -23,25 +11,7 @@ export const Home = () => {
       style={styles.background}
     >
       <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.hello}>Bonjour, Remi</Text>
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "start",
-            gap: 12,
-            justifyContent: "space-between",
-          }}
-        >
-          <View style={{ gap: 4 }}>
-            <Text style={styles.title}>
-              {city}, {country}
-            </Text>
-            <Text style={styles.date}>{date}</Text>
-          </View>
-          <Button onPress={() => alert("Filtre")} variant="icon">
-            <ListFilter color="white" size={28} />
-          </Button>
-        </View>
+        <HomeHeader />
         <WeatherCarousel />
 
         <View style={styles.card}>
@@ -79,20 +49,6 @@ const styles = StyleSheet.create({
     paddingTop: 76,
     paddingBottom: 110,
     gap: 14,
-  },
-  hello: {
-    color: "#b4c0ff",
-    fontSize: 16,
-  },
-  title: {
-    color: "#f3f5ff",
-    fontSize: 32,
-    fontWeight: "600",
-  },
-  date: {
-    color: "#f3f5ff",
-    fontSize: 20,
-    fontWeight: "300",
   },
   card: {
     backgroundColor: "rgba(120, 142, 255, 0.14)",

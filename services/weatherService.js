@@ -1,6 +1,6 @@
+import { WEATHER_API_URL } from "@env";
 import * as Location from "expo-location";
 
-const API_BASE = "https://api.open-meteo.com/v1/forecast";
 const DEFAULT_COORDS = { latitude: 48.8566, longitude: 2.3522 };
 const DEFAULT_LOCATION = { city: "Paris", country: "France" };
 
@@ -108,12 +108,7 @@ const formatWeatherResponse = (data, location) => {
 
 export const fetchWeather = async () => {
   const location = await getLocationAsync();
-  const url = `${API_BASE}
-?latitude=${location.coords.latitude}
-&longitude=${location.coords.longitude}
-&current=temperature_2m,weathercode,is_day,windspeed_10m
-&hourly=temperature_2m,relativehumidity_2m,apparent_temperature,windgusts_10m,precipitation,uv_index,visibility
-&timezone=auto`;
+  const url = `${WEATHER_API_URL}?latitude=${location.coords.latitude}&longitude=${location.coords.longitude}&current_weather=true&hourly=relativehumidity_2m,apparent_temperature,windgusts_10m,precipitation,uv_index,visibility&timezone=auto`;
   const response = await fetch(url);
 
   if (!response.ok) {
