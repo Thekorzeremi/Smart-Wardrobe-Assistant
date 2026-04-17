@@ -15,24 +15,24 @@ export const colors = {
   glassTab: {
     mainPillBorderOuter: "rgba(255,255,255,0.14)",
     mainPillBorderInner: "rgba(255,255,255,0.08)",
-    mainPillBackground: "rgba(10,12,16,0.72)",
+    mainPillBackground: "rgba(10,12,16,0.28)",
     shadow: "rgba(0,0,0,0.44)",
     shine: "transparent",
-    activeBackground: "rgba(255,255,255,0.12)",
-    activeBorder: "rgba(255,255,255,0.24)",
+    activeBackground: "rgba(255, 255, 255, 0.11)",
+    activeBorder: "rgba(255,255,255,0.32)",
     activeShadow: "rgba(0,0,0,0.26)",
     label: "rgba(255,255,255,0.78)",
     labelActive: "#ff496a",
     iconActive: "#ff496a",
     iconInactive: "rgba(255,255,255,0.80)",
     sideIcon: "rgba(255,255,255,0.90)",
-    sideOrbBackground: "rgba(10,12,16,0.72)",
+    sideOrbBackground: "rgba(10,12,16,0.28)",
     sideOrbBorderOuter: "rgba(255,255,255,0.14)",
     sideOrbBorderInner: "rgba(255,255,255,0.08)",
     sideOrbGlow: "transparent",
-    blurMainIntensity: 62,
-    blurSideIntensity: 62,
-    blurTint: "dark",
+    blurMainIntensity: 24,
+    blurSideIntensity: 24,
+    blurTint: "transparent",
   },
 };
 
@@ -53,6 +53,13 @@ export const text = StyleSheet.create({
     fontWeight: "400",
   },
 });
+
+export const glassTabMotion = {
+  pillInset: 5,
+  activeBubbleHorizontalInset: 4,
+  activeBubbleVerticalInset: 3,
+  activeBubbleFullHeightScale: 1.36,
+};
 
 export const elements = StyleSheet.create({
   card: {
@@ -191,5 +198,16 @@ export const elements = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
+  },
+  glassTabActiveBubbleBase: {
+    position: "absolute",
+    left: glassTabMotion.pillInset + glassTabMotion.activeBubbleHorizontalInset,
+    top: glassTabMotion.pillInset + glassTabMotion.activeBubbleVerticalInset,
+    bottom: glassTabMotion.pillInset + glassTabMotion.activeBubbleVerticalInset,
+    borderRadius: 24,
+    zIndex: 0,
+  },
+  glassTabTabLayer: {
+    zIndex: 1,
   },
 });
