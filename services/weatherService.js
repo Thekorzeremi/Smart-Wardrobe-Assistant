@@ -36,9 +36,7 @@ const getHourlyIndex = (hourly, currentTime) => {
   if (exactIndex >= 0) return exactIndex;
 
   const currentHour = currentTime.slice(0, 13);
-  const sameHourIndex = hourly.time.findIndex((time) =>
-    time.startsWith(currentHour),
-  );
+  const sameHourIndex = hourly.time.findIndex((time) => time.startsWith(currentHour));
   if (sameHourIndex >= 0) return sameHourIndex;
 
   return hourly.time.length > 0 ? hourly.time.length - 1 : -1;
@@ -85,14 +83,11 @@ const formatWeatherResponse = (data, location) => {
 
   return {
     temperature: Math.trunc(current.temperature),
-    feelsLike:
-      getHourlyValue(data.hourly, current.time, "apparent_temperature") ?? 0,
+    feelsLike: getHourlyValue(data.hourly, current.time, "apparent_temperature") ?? 0,
     windspeed: current.windspeed,
     windgusts: getHourlyValue(data.hourly, current.time, "windgusts_10m") ?? 0,
-    humidity:
-      getHourlyValue(data.hourly, current.time, "relativehumidity_2m") ?? 0,
-    precipitation:
-      getHourlyValue(data.hourly, current.time, "precipitation") ?? 0,
+    humidity: getHourlyValue(data.hourly, current.time, "relativehumidity_2m") ?? 0,
+    precipitation: getHourlyValue(data.hourly, current.time, "precipitation") ?? 0,
     uvIndex: getHourlyValue(data.hourly, current.time, "uv_index") ?? 0,
     visibility: getHourlyValue(data.hourly, current.time, "visibility") ?? 0,
     isDay: current.is_day,

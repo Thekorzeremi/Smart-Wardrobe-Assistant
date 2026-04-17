@@ -1,9 +1,10 @@
 import { ListFilter } from "lucide-react-native";
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { useDate } from "../hooks/useDate";
 import { useWeather } from "../hooks/useWeather";
 import { Loading } from "../screens/Loading";
 import { Button } from "./Button";
+import { elements } from "../theme";
 
 export const HomeHeader = () => {
   const { data, isLoading } = useWeather();
@@ -14,20 +15,13 @@ export const HomeHeader = () => {
   if (isLoading) return <Loading />;
   return (
     <>
-      <Text style={styles.hello}>Bonjour, Remi</Text>
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "start",
-          gap: 12,
-          justifyContent: "space-between",
-        }}
-      >
-        <View style={{ gap: 4 }}>
-          <Text style={styles.title}>
+      <Text style={elements.homeHeaderHello}>Bonjour, Remi</Text>
+      <View style={elements.homeHeaderRow}>
+        <View style={elements.homeHeaderLeft}>
+          <Text style={elements.homeHeaderTitle}>
             {city}, {country}
           </Text>
-          <Text style={styles.date}>{date}</Text>
+          <Text style={elements.homeHeaderDate}>{date}</Text>
         </View>
         <Button onPress={() => alert("Filtre")} variant="icon">
           <ListFilter color="white" size={28} />
@@ -36,20 +30,3 @@ export const HomeHeader = () => {
     </>
   );
 };
-
-export const styles = StyleSheet.create({
-  hello: {
-    color: "#b4c0ff",
-    fontSize: 16,
-  },
-  title: {
-    color: "#f3f5ff",
-    fontSize: 32,
-    fontWeight: "600",
-  },
-  date: {
-    color: "#f3f5ff",
-    fontSize: 20,
-    fontWeight: "300",
-  },
-});

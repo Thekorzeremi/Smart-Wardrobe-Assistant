@@ -5,7 +5,7 @@ import { useAuth } from "../contexts/AuthContext";
 import FrostedCard from "../components/FrostedCard";
 import { Layout } from "../components/Layout";
 import { Avatar } from "../components/Avatar";
-import { authStyles } from "../styles/app.styles";
+import { authStyles, elements } from "../theme";
 
 export const ProfileUpdate = () => {
   const navigation = useNavigation();
@@ -42,7 +42,7 @@ export const ProfileUpdate = () => {
     <Layout>
       <View style={authStyles.container}>
         <FrostedCard>
-          <View style={{ alignItems: "center", marginBottom: 20 }}>
+          <View style={elements.profileUpdateAvatarWrapper}>
             <Avatar seed={username || userData?.username || "guest"} size={100} />
           </View>
 

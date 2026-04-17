@@ -7,36 +7,37 @@ import {
   Wind,
 } from "lucide-react-native";
 import { useState } from "react";
-import { Dimensions, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Dimensions, ScrollView, Text, View } from "react-native";
 import { useWeather } from "../hooks/useWeather";
 import { Loading } from "../screens/Loading";
+import { elements, weatherDetailsSlideStyle, weatherSlideStyle } from "../theme";
 
 const { width } = Dimensions.get("window");
 
 // Slide 1
 const MainSlide = ({ temperature, condition, emoji }) => (
-  <View style={styles.slide}>
-    <Text style={styles.emoji}>{emoji}</Text>
-    <View style={{ alignItems: "center" }}>
-      <Text style={styles.temp}>{temperature}°</Text>
-      <Text style={styles.condition}>{condition}</Text>
+  <View style={[elements.weatherSlide, weatherSlideStyle(width)]}>
+    <Text style={elements.weatherEmoji}>{emoji}</Text>
+    <View style={elements.weatherMainCenter}>
+      <Text style={elements.weatherTemp}>{temperature}°</Text>
+      <Text style={elements.weatherCondition}>{condition}</Text>
     </View>
   </View>
 );
 
 // Slide 2
 const DetailsSlide = ({ details }) => (
-  <View style={[styles.slide, { justifyContent: "space-between" }]}>
+  <View style={[elements.weatherSlide, weatherDetailsSlideStyle(width)]}>
     {details.map(({ Icon, value, label }) => (
-      <View key={label} style={styles.detailsContainer}>
+      <View key={label} style={elements.weatherDetailsContainer}>
         <Icon
           color="white"
           size={24}
           strokeWidth={1.5}
-          style={styles.detailIcon}
+          style={elements.weatherDetailIcon}
         />
-        <Text style={styles.detail}>{value}</Text>
-        <Text style={styles.detailTitle}>{label}</Text>
+        <Text style={elements.weatherDetail}>{value}</Text>
+        <Text style={elements.weatherDetailTitle}>{label}</Text>
       </View>
     ))}
   </View>
@@ -44,13 +45,13 @@ const DetailsSlide = ({ details }) => (
 
 // Pagination
 const Pagination = ({ count, activeIndex }) => (
-  <View style={styles.pagination}>
+  <View style={elements.weatherPagination}>
     {Array.from({ length: count }).map((_, i) => (
       <View
         key={i}
         style={[
-          styles.dot,
-          i === activeIndex ? styles.dotActive : styles.dotInactive,
+          elements.weatherDot,
+          i === activeIndex ? elements.weatherDotActive : elements.weatherDotInactive,
         ]}
       />
     ))}
@@ -65,8 +66,8 @@ export const WeatherCarousel = () => {
 
   if (isError)
     return (
-      <View style={styles.slide}>
-        <Text style={styles.condition}>Impossible de charger la météo</Text>
+      <View style={[elements.weatherSlide, weatherSlideStyle(width)]}>
+        <Text style={elements.weatherCondition}>Impossible de charger la météo</Text>
       </View>
     );
 
@@ -128,7 +129,7 @@ export const WeatherCarousel = () => {
         snapToAlignment="center"
       >
         {slides.map((slide) => (
-          <View key={slide.key} style={{ width: width - 32 }}>
+          <View key={slide.key} style={weatherSlideStyle(width)}>
             {slide}
           </View>
         ))}
@@ -138,41 +139,3 @@ export const WeatherCarousel = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  slide: {
-    justifyContent: "center",
-    alignItems: "center",
-    display: "flex",
-    flexDirection: "row",
-    borderRadius: 20,
-    padding: 16,
-    gap: 8,
-    width: width - 32,
-    height: 180,
-    flexWrap: "wrap",
-  },
-  city: { fontSize: 20, lineHeight: 20, fontWeight: "bold", color: "white" },
-  temp: { fontSize: 80, lineHeight: 80, fontWeight: "bold", color: "white" },
-  emoji: { fontSize: 140, lineHeight: 140 },
-  condition: { fontSize: 16, color: "#ddd" },
-  detailsContainer: {
-    alignItems: "center",
-    width: "30%",
-  },
-  detailTitle: {
-    opacity: 0.5,
-    color: "white",
-  },
-  detail: { fontSize: 16, color: "#fff", fontWeight: "500" },
-  detailIcon: { marginBottom: 6 },
-  pagination: {
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 6,
-    marginTop: 8,
-  },
-  dot: { height: 6, borderRadius: 3 },
-  dotActive: { width: 16, backgroundColor: "white" },
-  dotInactive: { width: 6, backgroundColor: "rgba(255,255,255,0.4)" },
-});

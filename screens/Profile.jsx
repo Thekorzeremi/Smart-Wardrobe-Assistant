@@ -1,6 +1,6 @@
 import { Text, View , TouchableOpacity, Alert } from "react-native";
 import { useAuth } from "../contexts/AuthContext";
-import { profileStyles } from "../styles/app.styles";
+import { profileStyles } from "../theme";
 import { Avatar } from "../components/Avatar";
 
 export const Profile = ({navigation}) => {
