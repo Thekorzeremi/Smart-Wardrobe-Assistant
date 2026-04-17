@@ -5,7 +5,11 @@ export const colors = {
   backgroundHomeLinearTo: "#002863",
   backgroundOtherLinearFrom: "#3F3F47",
   backgroundOtherLinearTo: "#070709",
-  card: {
+  cardHome: {
+    backgroundColor: "#788eff24",
+    borderColor: "#ffffff24",
+  },
+  cardWardrobe: {
     backgroundColor: "#151A31",
     borderColor: "#363A4E",
   },
@@ -34,6 +38,7 @@ export const colors = {
     blurSideIntensity: 24,
     blurTint: "transparent",
   },
+  button: { backgroundColor: "#788eff24", borderColor: "#ffffff24" },
 };
 
 export const text = StyleSheet.create({
@@ -47,9 +52,14 @@ export const text = StyleSheet.create({
     fontSize: 18,
     fontWeight: "400",
   },
-  text: {
+  textMedium: {
     fontFamily: "SFProDisplay-Regular",
-    fontSize: 12,
+    fontSize: 16,
+    fontWeight: "500",
+  },
+  textSmall: {
+    fontFamily: "SFProDisplay-Regular",
+    fontSize: 14,
     fontWeight: "400",
   },
 });
@@ -209,8 +219,8 @@ export const elements = StyleSheet.create({
     flex: 1,
   },
   card: {
-    backgroundColor: colors.card.backgroundColor,
-    borderColor: colors.card.borderColor,
+    backgroundColor: colors.cardHome.backgroundColor,
+    borderColor: colors.cardHome.borderColor,
     borderRadius: 10,
   },
   title: {
@@ -221,9 +231,13 @@ export const elements = StyleSheet.create({
     color: colors.textSubtitle,
     ...text.subtitle,
   },
-  text: {
+  textSmall: {
     color: colors.text,
-    ...text.text,
+    ...text.textSmall,
+  },
+  textMedium: {
+    color: colors.text,
+    ...text.textMedium,
   },
   glassTabMainPill: {
     flex: 1,

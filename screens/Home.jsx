@@ -1,13 +1,17 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { HomeHeader } from "../components/HomeHeader";
+import { WardrobeItem } from "../components/WardrobeItem";
 import { WeatherCarousel } from "../components/WeatherCarousel";
-import { elements } from "../theme";
+import { useGetClothesQuery } from "../services/wardrobe-service";
+import { colors, elements } from "../theme";
 
 export const Home = () => {
+  const { data, isLoading, error, refetch } = useGetClothesQuery();
+
   return (
     <LinearGradient
-      colors={["rgba(0, 45, 101, 0.8)", "rgba(0, 9, 20, 0.8)"]}
+      colors={[colors.backgroundHomeLinearFrom, colors.backgroundHomeLinearTo]}
       start={{ x: 0, y: 0.1 }}
       style={elements.homeBackground}
     >
@@ -15,22 +19,51 @@ export const Home = () => {
         <HomeHeader />
         <WeatherCarousel />
 
-        <View style={elements.homeCard}>
-          <Text style={elements.homeCardTitle}>Suggestion du jour</Text>
-          <Text style={elements.homeCardText}>
+        <View>
+          <Text style={[elements.textMedium, { marginBottom: 8 }]}>
+            Suggestion du jour
+          </Text>
+          <Text style={elements.textSmall}>
             Il fait doux aujourd'hui. Pense a une tenue legere avec une veste
             fine.
           </Text>
         </View>
-
-        <View style={elements.homeCard}>
-          <Text style={elements.homeCardTitle}>Prochaine etape</Text>
-          <Text style={elements.homeCardText}>
-            Va dans l'onglet Armoire pour afficher ta garde-robe, ou Profil pour
-            modifier ton compte.
-          </Text>
+        <View style={styles.grid}>
+          {data?.map((item) => (
+            <View key={item.id} style={styles.gridItem}>
+              <WardrobeItem item={item} variant="home" />
+            </View>
+          ))}
         </View>
       </ScrollView>
     </LinearGradient>
   );
 };
+
+const styles = StyleSheet.create({
+  background: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    flex: 1,
+  },
+  container: {
+    flexGrow: 1,
+    paddingHorizontal: 16,
+    paddingTop: 76,
+    paddingBottom: 110,
+    gap: 8,
+  },
+
+  grid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 12,
+    marginTop: 8,
+  },
+  gridItem: {
+    width: "48%",
+  },
+});
