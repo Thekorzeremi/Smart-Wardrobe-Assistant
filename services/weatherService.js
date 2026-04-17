@@ -1,6 +1,6 @@
+import { WEATHER_API_URL } from "@env";
 import * as Location from "expo-location";
 
-const API_BASE = "https://api.open-meteo.com/v1/forecast";
 const DEFAULT_COORDS = { latitude: 48.8566, longitude: 2.3522 };
 const DEFAULT_LOCATION = { city: "Paris", country: "France" };
 
@@ -36,9 +36,7 @@ const getHourlyIndex = (hourly, currentTime) => {
   if (exactIndex >= 0) return exactIndex;
 
   const currentHour = currentTime.slice(0, 13);
-  const sameHourIndex = hourly.time.findIndex((time) =>
-    time.startsWith(currentHour),
-  );
+  const sameHourIndex = hourly.time.findIndex((time) => time.startsWith(currentHour));
   if (sameHourIndex >= 0) return sameHourIndex;
 
   return hourly.time.length > 0 ? hourly.time.length - 1 : -1;
@@ -85,14 +83,11 @@ const formatWeatherResponse = (data, location) => {
 
   return {
     temperature: Math.trunc(current.temperature),
-    feelsLike:
-      getHourlyValue(data.hourly, current.time, "apparent_temperature") ?? 0,
+    feelsLike: getHourlyValue(data.hourly, current.time, "apparent_temperature") ?? 0,
     windspeed: current.windspeed,
     windgusts: getHourlyValue(data.hourly, current.time, "windgusts_10m") ?? 0,
-    humidity:
-      getHourlyValue(data.hourly, current.time, "relativehumidity_2m") ?? 0,
-    precipitation:
-      getHourlyValue(data.hourly, current.time, "precipitation") ?? 0,
+    humidity: getHourlyValue(data.hourly, current.time, "relativehumidity_2m") ?? 0,
+    precipitation: getHourlyValue(data.hourly, current.time, "precipitation") ?? 0,
     uvIndex: getHourlyValue(data.hourly, current.time, "uv_index") ?? 0,
     visibility: getHourlyValue(data.hourly, current.time, "visibility") ?? 0,
     isDay: current.is_day,
@@ -108,12 +103,7 @@ const formatWeatherResponse = (data, location) => {
 
 export const fetchWeather = async () => {
   const location = await getLocationAsync();
-  const url = `${API_BASE}
-?latitude=${location.coords.latitude}
-&longitude=${location.coords.longitude}
-&current=temperature_2m,weathercode,is_day,windspeed_10m
-&hourly=temperature_2m,relativehumidity_2m,apparent_temperature,windgusts_10m,precipitation,uv_index,visibility
-&timezone=auto`;
+  const url = `${WEATHER_API_URL}?latitude=${location.coords.latitude}&longitude=${location.coords.longitude}&current_weather=true&hourly=relativehumidity_2m,apparent_temperature,windgusts_10m,precipitation,uv_index,visibility&timezone=auto`;
   const response = await fetch(url);
 
   if (!response.ok) {
