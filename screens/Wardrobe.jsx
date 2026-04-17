@@ -1,5 +1,5 @@
 import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View, Image } from "react-native";
-import { useGetClothesQuery } from "../services/clothes-queries";
+import { useGetClothesQuery } from "../services/wardrobe-service";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRefreshOnFocus } from "../hooks/use-refresh-on-focus";
 
