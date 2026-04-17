@@ -1,12 +1,14 @@
 import { createContext, useState, useEffect, useContext } from 'react';
 import { supabase } from '../services/supabase';
+import { userService } from '../services/userService';
 
 const AuthContext = createContext({});
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
-
+  
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
@@ -21,37 +23,46 @@ export const AuthProvider = ({ children }) => {
     return () => subscription?.unsubscribe();
   }, []);
 
+  useEffect(() => {
+    if (user) {
+      userService.getUser(user.id).then(setUserData).catch(console.error);
+    } else {
+      setUserData(null);
+    }
+  }, [user]);
+
   const signIn = async (email, password) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
   };
 
-  const signUp = async (email, password, metadata) => {
-    const { error } = await supabase.auth.signUp({
+  const signUp = async (email, password, username) => {
+    const { data: authData, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: metadata }
+      options: { data: { username } }
     });
-    if (error) throw error;
+    if (signUpError) throw signUpError;
+
+    if (authData.user) {
+      await userService.upsertUser(authData.user.id, { username, city: '', country: '' });
+    }
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
-  };
-  const updateProfile = async ({ fullName, email, password }) => {
-    const updates = {};
-    if (fullName) updates.data = { full_name: fullName };
-    if (email) updates.email = email;
-    if (password) updates.password = password;
-
-    const { error } = await supabase.auth.updateUser(updates);
+    const { error } = await supabase.auth.signOut();
     if (error) throw error;
-
-    const { data: { user: updatedUser } } = await supabase.auth.getUser();
-    setUser(updatedUser);
+    setUser(null);
+    setUserData(null);
+  };
+  const updateProfile = async (updates) => {
+    if (!user) throw new Error('Utilisateur non connecté');
+    const updated = await userService.upsertUser(user.id, updates);
+    setUserData(updated);
+    return updated;
   };
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut, updateProfile }}>
+    <AuthContext.Provider value={{ user, userData, loading, signIn, signUp, signOut, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );
