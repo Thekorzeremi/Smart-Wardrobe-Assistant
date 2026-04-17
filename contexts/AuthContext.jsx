@@ -13,11 +13,12 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     });
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       setLoading(false);
     });
-    return () => listener?.unsubscribe();
+
+    return () => subscription?.unsubscribe();
   }, []);
 
   const signIn = async (email, password) => {
@@ -50,7 +51,7 @@ export const AuthProvider = ({ children }) => {
     setUser(updatedUser);
   };
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );
