@@ -1,7 +1,14 @@
 import FrostedCard from "../components/FrostedCard";
 import { Layout } from "../components/Layout";
 import { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
 import { useAuth } from "../contexts/AuthContext";
 import { authStyles } from "../theme";
 
@@ -51,8 +58,16 @@ export const Login = ({ navigation }) => {
             onChangeText={setPassword}
           />
 
-          <TouchableOpacity style={authStyles.button} onPress={handleLogin} disabled={loading}>
-            {loading ? <ActivityIndicator color="#fff" /> : <Text style={authStyles.buttonText}>Se connecter</Text>}
+          <TouchableOpacity
+            style={authStyles.button}
+            onPress={handleLogin}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={authStyles.buttonText}>Se connecter</Text>
+            )}
           </TouchableOpacity>
 
           <TouchableOpacity onPress={() => navigation.navigate("Register")}>

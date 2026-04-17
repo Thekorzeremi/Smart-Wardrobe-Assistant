@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../contexts/AuthContext";
 import FrostedCard from "../components/FrostedCard";
@@ -29,7 +36,7 @@ export const ProfileUpdate = () => {
         country: country.trim(),
       });
       Alert.alert("Succès", "Profil mis à jour", [
-        { text: "OK", onPress: () => navigation.goBack() }
+        { text: "OK", onPress: () => navigation.goBack() },
       ]);
     } catch (error) {
       Alert.alert("Erreur", error.message);
@@ -47,9 +54,7 @@ export const ProfileUpdate = () => {
           </View>
 
           <Text style={authStyles.title}>Modifier mon profil</Text>
-          <Text style={authStyles.subtitle}>
-            Modifiez vos informations personnelles
-          </Text>
+          <Text style={authStyles.subtitle}>Modifiez vos informations personnelles</Text>
 
           <TextInput
             style={authStyles.input}

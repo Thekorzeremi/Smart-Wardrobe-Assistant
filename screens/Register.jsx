@@ -1,7 +1,14 @@
 import FrostedCard from "../components/FrostedCard";
 import { Layout } from "../components/Layout";
 import { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
 import { useAuth } from "../contexts/AuthContext";
 import { authStyles } from "../theme";
 
@@ -37,7 +44,10 @@ export const Register = ({ navigation }) => {
       <View style={authStyles.container}>
         <FrostedCard>
           <Text style={authStyles.title}>Inscription</Text>
-          <Text style={authStyles.subtitle}> Inscrivez vous et créez votre garde-robe intelligente</Text>
+          <Text style={authStyles.subtitle}>
+            {" "}
+            Inscrivez vous et créez votre garde-robe intelligente
+          </Text>
 
           <TextInput
             style={authStyles.input}
@@ -57,8 +67,16 @@ export const Register = ({ navigation }) => {
             onChangeText={setPassword}
           />
 
-          <TouchableOpacity style={authStyles.button} onPress={handleRegister} disabled={loading}>
-            {loading ? <ActivityIndicator color="#fff" /> : <Text style={authStyles.buttonText}>S'inscrire</Text>}
+          <TouchableOpacity
+            style={authStyles.button}
+            onPress={handleRegister}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={authStyles.buttonText}>S'inscrire</Text>
+            )}
           </TouchableOpacity>
 
           <TouchableOpacity onPress={() => navigation.navigate("Login")}>

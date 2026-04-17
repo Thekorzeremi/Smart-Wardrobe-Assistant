@@ -249,6 +249,7 @@ export const elements = StyleSheet.create({
     borderRadius: 32,
     borderWidth: 0.6,
     borderColor: colors.glassTab.mainPillBorderInner,
+    borderStyle: "solid",
   },
   glassTabShine: {
     position: "absolute",

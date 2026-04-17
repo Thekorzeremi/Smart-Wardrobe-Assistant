@@ -1,25 +1,28 @@
-import { Text, View , TouchableOpacity, Alert } from "react-native";
+import { Text, View, TouchableOpacity, Alert } from "react-native";
 import { useAuth } from "../contexts/AuthContext";
 import { profileStyles } from "../theme";
 import { Avatar } from "../components/Avatar";
 
-export const Profile = ({navigation}) => {
+export const Profile = ({ navigation }) => {
   const { user, userData, signOut, updateProfile } = useAuth();
-  
-  const username = userData?.username || user?.email?.split('@')[0] || "Utilisateur";
+
+  const username = userData?.username || user?.email?.split("@")[0] || "Utilisateur";
   const email = user?.email || "";
-  const location = [userData?.city, userData?.country].filter(Boolean).join(', ');
+  const location = [userData?.city, userData?.country].filter(Boolean).join(", ");
 
   const handleLogout = () => {
     Alert.alert("Déconnexion", "Voulez-vous vraiment vous déconnecter ?", [
       { text: "Annuler", style: "cancel" },
-      { text: "OK", onPress: async () => {
-        try {
+      {
+        text: "OK",
+        onPress: async () => {
+          try {
             await signOut();
           } catch (error) {
             Alert.alert("Erreur", error.message);
           }
-      } },
+        },
+      },
     ]);
   };
   return (
@@ -39,7 +42,6 @@ export const Profile = ({navigation}) => {
           <Text style={profileStyles.logout}>Déconnexion</Text>
         </TouchableOpacity>
       </View>
-      
     </View>
   );
 };

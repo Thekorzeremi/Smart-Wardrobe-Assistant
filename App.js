@@ -14,6 +14,7 @@ import { focusManager } from "@tanstack/react-query";
 import { Login } from "./screens/Login";
 import { Profile } from "./screens/Profile";
 import { Register } from "./screens/Register";
+import { Coffee, Plus, Dice5 } from "lucide-react-native";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -38,10 +39,44 @@ function AuthStack() {
   );
 }
 function AppTabs() {
+  const getSideActionConfig = ({ routeName, navigation }) => {
+    if (routeName === "Accueil") {
+      return {
+        Icon: Dice5,
+        onPress: () => {},
+      };
+    }
+
+    if (routeName === "Armoire") {
+      return {
+        Icon: Plus,
+        onPress: () => {},
+      };
+    }
+
+    if (routeName === "Profil") {
+      return {
+        Icon: Coffee,
+        onPress: () => {
+          alert("Prendre un café", "Fonctionnalité à venir", [
+			{ text: "Annuler", style: "cancel" },
+			{ text: "OK", onPress: () => alert("Café pris ! Fonctionnalité à venir") },
+		  ]);
+        },
+      };
+    }
+
+    return {
+      Icon: Coffee,
+    };
+  };
+
   return (
     <Tab.Navigator
       initialRouteName="Accueil"
-      tabBar={(props) => <GlassTabBar {...props} />}
+      tabBar={(props) => (
+        <GlassTabBar {...props} getSideActionConfig={getSideActionConfig} />
+      )}
       screenOptions={{
         headerShown: false,
         sceneStyle: { backgroundColor: "#05070f" },
