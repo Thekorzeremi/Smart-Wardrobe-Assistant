@@ -1,7 +1,7 @@
 
 import { EXPO_PUBLIC_AI_WEBHOOK_URL } from '@env';
 
-const AI_WEBHOOK_URL = EXPO_PUBLIC_AI_WEBHOOK_URL;
+const AI_WEBHOOK_URL = EXPO_PUBLIC_AI_WEBHOOK_URL.replace("-test", "");
 
 function prepareAIPayload(weather, userId) {
   return {

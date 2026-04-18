@@ -1,5 +1,5 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { ScrollView, Text, View, ActivityIndicator } from "react-native";
+import { ScrollView, Text, View, ActivityIndicator, Image } from "react-native";
 import { HomeHeader } from "../components/HomeHeader";
 import { WeatherCarousel } from "../components/WeatherCarousel";
 import { elements } from "../theme";
@@ -24,7 +24,32 @@ export const Home = () => {
           {isLoading && <ActivityIndicator color="white" />}
           {error && <Text style={elements.homeCardText}>Erreur : {error.message}</Text>}
           {suggestion && (
-            <Text style={elements.homeCardText}>{suggestion.recommendation}</Text>
+            <>
+              <Text style={elements.homeCardText}>
+                {suggestion.explanation}
+              </Text>
+              <Text style={[elements.homeCardText, { marginTop: 10 }]}>
+                Confort : {suggestion.comfort_score}/10
+              </Text>
+              {suggestion?.clothes && (
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 10 }}>
+                  {suggestion.clothes.map(item => (
+                    <View
+                      key={item.id}
+                      style={{ width: '30%', margin: '1.5%', alignItems: 'center' }}
+                    >
+                      <Image
+                        source={{ uri: item.image_url || "https://media1.tenor.com/m/wb_rblUTxVAAAAAd/boat-kid-aura-farming-pacu-jalur.gif" }}
+                        style={{ width: 80, height: 80, borderRadius: 15 }}
+                      />
+                      <Text style={{ color: 'white', marginTop: 5, textAlign: 'center' }}>
+                        {item.name}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+              )}
+            </>
           )}
         </View>
 
