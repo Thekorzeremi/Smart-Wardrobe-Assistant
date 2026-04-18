@@ -12,7 +12,9 @@ export function useSuggestion() {
     queryFn: async () => {
       if (!user) return null;
       const weather = await fetchWeather();
-      return fetchSuggestion(user.id, weather);
+      const rawResponse = await fetchSuggestion(user.id, weather);
+      const suggestion = Array.isArray(rawResponse) ? rawResponse[0] : rawResponse;
+      return suggestion;
     },
     enabled: !!user,
     staleTime: 1000 * 60 * 30,
