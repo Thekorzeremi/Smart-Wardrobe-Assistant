@@ -606,4 +606,31 @@ export const elements = StyleSheet.create({
     padding: 12,
     borderRadius: 14,
   },
+  imagePlaceholder:{
+    height: 100,
+    borderRadius: 12,
+    backgroundColor: "rgba(255,255,255,0.13)",
+    marginBottom: 10,
+    overflow: "hidden"
+  },
+  itemCard: {
+    borderRadius: 18,
+    borderWidth: 1,
+    padding: 10,
+    marginBottom: 12,
+  },
+  itemTitle: {
+    color: "#eef1ff",
+    fontSize: 15,
+    fontWeight: "500",
+  },
+  homeGrid : { 
+    flexDirection: 'row', 
+    flexWrap: 'wrap', 
+    marginTop: 10 
+  },
+  homeGridItem: {
+    width: '48%',
+    padding: 4,
+  },
 });

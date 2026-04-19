@@ -1,16 +1,13 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { ScrollView, Text, View, ActivityIndicator, Image } from "react-native";
 import { HomeHeader } from "../components/HomeHeader";
-import { WardrobeItem } from "../components/WardrobeItem";
 import { WeatherCarousel } from "../components/WeatherCarousel";
 import { useSuggestion } from '../hooks/use-suggest';
-import { useGetClothesQuery } from "../services/wardrobe-service";
 import { colors, elements } from "../theme";
 
 export const Home = () => {
   const { data: suggestion, isLoading, error, refresh } = useSuggestion();
 
-  const { data, isLoading, error, refetch } = useGetClothesQuery();
 
   return (
     <LinearGradient
