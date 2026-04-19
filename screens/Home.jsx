@@ -5,9 +5,11 @@ import { WeatherCarousel } from "../components/WeatherCarousel";
 import { useSuggestion } from '../hooks/use-suggest';
 import { colors, elements } from "../theme";
 import {useAuth} from "../contexts/AuthContext";
+import { Button } from "../components/Button";
+import { ListFilter, RefreshCcwIcon } from "lucide-react-native";
 
 export const Home = () => {
-  const { data: suggestion, isLoading, error, refresh } = useSuggestion();
+  const { data: suggestion, isLoading, error } = useSuggestion();
   const { userData, loading: authLoading } = useAuth();
   const username = userData?.username || "Utilisateur";
 
@@ -29,8 +31,17 @@ export const Home = () => {
         <WeatherCarousel />
 
         <View style={elements.homeCard}>
-          <Text style={elements.homeCardTitle}>Suggestion du jour</Text>
-
+          <View style={ {flexDirection: 'row'}}>
+            <Text style={elements.homeCardTitle}>Suggestion du jour</Text>
+            <View style={{ marginLeft: 'auto', flexDirection: 'row', alignItems: 'right', margin:5, gap: 8 }}>
+              <Button onPress={() => alert("Filtre")} variant="icon">
+                <ListFilter color="white" size={20} />
+              </Button>
+              <Button onPress={() => alert("Refresh")} variant="icon">
+                <RefreshCcwIcon color="white" size={20} />
+              </Button>
+            </View>
+          </View>
           {isLoading && <ActivityIndicator color="white" />}
           {error && <Text style={elements.homeCardText}>Erreur : {error.message}</Text>}
           {suggestion && (
