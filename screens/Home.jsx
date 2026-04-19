@@ -5,8 +5,7 @@ import { WeatherCarousel } from "../components/WeatherCarousel";
 import { useSuggestion } from '../hooks/use-suggest';
 import { colors, elements } from "../theme";
 import {useAuth} from "../contexts/AuthContext";
-import { Button } from "../components/Button";
-import { ListFilter, RefreshCcwIcon } from "lucide-react-native";
+import { SuggestionSection } from "../components/SuggestionSection";
 
 export const Home = () => {
   const { data: suggestion, isLoading, error } = useSuggestion();
@@ -29,51 +28,8 @@ export const Home = () => {
       <ScrollView contentContainerStyle={elements.homeContainer}>
         <HomeHeader username={username}/>
         <WeatherCarousel />
-
-        <View style={elements.homeCard}>
-          <View style={ {flexDirection: 'row'}}>
-            <Text style={elements.homeCardTitle}>Suggestion du jour</Text>
-            <View style={{ marginLeft: 'auto', flexDirection: 'row', alignItems: 'right', margin:5, gap: 8 }}>
-              <Button onPress={() => alert("Filtre")} variant="icon">
-                <ListFilter color="white" size={20} />
-              </Button>
-              <Button onPress={() => alert("Refresh")} variant="icon">
-                <RefreshCcwIcon color="white" size={20} />
-              </Button>
-            </View>
-          </View>
-          {isLoading && <ActivityIndicator color="white" />}
-          {error && <Text style={elements.homeCardText}>Erreur : {error.message}</Text>}
-          {suggestion && (
-            <>
-              <Text style={elements.homeCardText}>
-                {suggestion.explanation}
-              </Text>
-              <Text style={[elements.homeCardText, { marginTop: 10 }]}>
-                Confort : {suggestion.comfort_score}/10
-              </Text>
-              {suggestion?.clothes && (
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 10 }}>
-                  {suggestion.clothes.map(item => (
-                    <View
-                      key={item.id}
-                      style={{ width: '30%', margin: '1.5%', alignItems: 'center' }}
-                    >
-                      <Image
-                        source={{ uri: item.image_url || "https://media1.tenor.com/m/wb_rblUTxVAAAAAd/boat-kid-aura-farming-pacu-jalur.gif" }}
-                        style={{ width: 80, height: 80, borderRadius: 15 }}
-                      />
-                      <Text style={{ color: 'white', marginTop: 5, textAlign: 'center' }}>
-                        {item.name}
-                      </Text>
-                    </View>
-                  ))}
-                </View>
-              )}
-            </>
-          )}
-        </View>
-
+        <SuggestionSection />
+        
         <View style={elements.homeCard}>
           <Text style={elements.homeCardTitle}>Prochaine etape</Text>
           <Text style={elements.homeCardText}>
