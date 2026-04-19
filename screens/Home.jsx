@@ -4,11 +4,20 @@ import { HomeHeader } from "../components/HomeHeader";
 import { WeatherCarousel } from "../components/WeatherCarousel";
 import { useSuggestion } from '../hooks/use-suggest';
 import { colors, elements } from "../theme";
+import {useAuth} from "../contexts/AuthContext";
 
 export const Home = () => {
   const { data: suggestion, isLoading, error, refresh } = useSuggestion();
+  const { userData, loading: authLoading } = useAuth();
+  const username = userData?.username || "Utilisateur";
 
-
+  if (authLoading) {
+    return (
+        <View style={[elements.homeBackground, { justifyContent: 'center' }]}>
+          <ActivityIndicator size="large" color={colors.primary} />
+        </View>
+    );
+  }
   return (
     <LinearGradient
       colors={[colors.backgroundHomeLinearFrom, colors.backgroundHomeLinearTo]}
@@ -16,7 +25,7 @@ export const Home = () => {
       style={elements.homeBackground}
     >
       <ScrollView contentContainerStyle={elements.homeContainer}>
-        <HomeHeader />
+        <HomeHeader username={username}/>
         <WeatherCarousel />
 
         <View style={elements.homeCard}>

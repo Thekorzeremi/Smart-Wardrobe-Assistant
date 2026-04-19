@@ -6,7 +6,7 @@ import { Loading } from "../screens/Loading";
 import { Button } from "./Button";
 import { elements } from "../theme";
 
-export const HomeHeader = () => {
+export const HomeHeader = ({ username }) => {
   const { data, isLoading } = useWeather();
   const { date } = useDate();
 
@@ -15,7 +15,7 @@ export const HomeHeader = () => {
   if (isLoading) return <Loading />;
   return (
     <>
-      <Text style={elements.homeHeaderHello}>Bonjour, Remi</Text>
+      <Text style={elements.homeHeaderHello}>Bonjour, {username}</Text>
       <View style={elements.homeHeaderRow}>
         <View style={elements.homeHeaderLeft}>
           <Text style={elements.homeHeaderTitle}>
