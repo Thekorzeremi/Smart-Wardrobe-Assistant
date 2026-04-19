@@ -3,16 +3,16 @@ import { useAuth } from '../contexts/AuthContext';
 import { fetchSuggestion } from '../services/ai_n8n_service';
 import { fetchWeather } from '../services/weatherService';
 
-export function useSuggestion() {
+export function useSuggestion(filters = {}) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
   const query = useQuery({
-    queryKey: ['suggestion', user?.id],
+    queryKey: ['suggestion', user?.id, filters],
     queryFn: async () => {
       if (!user) return null;
       const weather = await fetchWeather();
-      const rawResponse = await fetchSuggestion(user.id, weather);
+      const rawResponse = await fetchSuggestion(user.id, weather, filters);
       const suggestion = Array.isArray(rawResponse) ? rawResponse[0] : rawResponse;
       return suggestion;
     },
@@ -27,7 +27,7 @@ export function useSuggestion() {
 
   // Refresh 
   const refresh = () => {
-    queryClient.invalidateQueries({ queryKey: ['suggestion', user?.id] });
+    queryClient.invalidateQueries({ queryKey: ['suggestion', user?.id, filters] });
   };
 
   return { ...query, refresh };

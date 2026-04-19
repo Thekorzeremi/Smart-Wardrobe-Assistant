@@ -3,30 +3,36 @@ import { Button } from "./Button";
 import { ListFilter, RefreshCcwIcon } from "lucide-react-native";
 import { useSuggestion } from "../hooks/use-suggest";
 import { elements } from "../theme";
+import { FilterModal } from "./FilterModal";
+import { useState } from "react";
 
-interface SuggestionSectionProps {
-  onFilterPress?: () => void;
-  onRefreshPress?: () => void;
-}
+export const SuggestionSection = () => {
+  const [filters, setFilters] = useState({});
+  const { data: suggestion, isLoading, error, refresh } = useSuggestion(filters);
+  const [modalVisible, setModalVisible] = useState(false);
 
-export const SuggestionSection = ({ 
-  onFilterPress, 
-  onRefreshPress 
-}: SuggestionSectionProps) => {
-  const { data: suggestion, isLoading, error } = useSuggestion();
+  const handleFilterPress = () => {
+    setModalVisible(true);
+  };
 
-  const handleFilter = onFilterPress || (() => alert("Filtre"));
-  const handleRefresh = onRefreshPress || (() => alert("Refresh"));
+  const handleApplyFilters = (newFilters) => {
+    setFilters(newFilters);
+    refresh();
+  };
+
+  const handleRefreshPress = () => {
+    refresh();
+  };
 
   return (
     <View style={elements.homeCard}>
       <View style={{ flexDirection: 'row' }}>
         <Text style={elements.homeCardTitle}>Suggestion du jour</Text>
         <View style={{ marginLeft: 'auto', flexDirection: 'row', gap: 8, margin: 5 }}>
-          <Button onPress={handleFilter} variant="icon">
+          <Button onPress={handleFilterPress} variant="icon">
             <ListFilter color="white" size={20} />
           </Button>
-          <Button onPress={handleRefresh} variant="icon">
+          <Button onPress={handleRefreshPress} variant="icon">
             <RefreshCcwIcon color="white" size={20} />
           </Button>
         </View>
@@ -62,6 +68,12 @@ export const SuggestionSection = ({
               ))}
             </View>
           )}
+          <FilterModal
+            visible={modalVisible}
+            onClose={() => setModalVisible(false)}
+            onApply={handleApplyFilters}
+            initialFilters={filters}
+          />
         </>
       )}
     </View>

@@ -1,14 +1,12 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { ScrollView, Text, View, ActivityIndicator, Image } from "react-native";
+import { ScrollView, Text, View, ActivityIndicator } from "react-native";
 import { HomeHeader } from "../components/HomeHeader";
 import { WeatherCarousel } from "../components/WeatherCarousel";
-import { useSuggestion } from '../hooks/use-suggest';
 import { colors, elements } from "../theme";
 import {useAuth} from "../contexts/AuthContext";
 import { SuggestionSection } from "../components/SuggestionSection";
 
 export const Home = () => {
-  const { data: suggestion, isLoading, error } = useSuggestion();
   const { userData, loading: authLoading } = useAuth();
   const username = userData?.username || "Utilisateur";
 
