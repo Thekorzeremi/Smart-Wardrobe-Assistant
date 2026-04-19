@@ -1,15 +1,31 @@
 import { ActivityIndicator, Image, Text, View } from "react-native";
 import { Button } from "./Button";
 import { ListFilter, RefreshCcwIcon } from "lucide-react-native";
-import { useSuggestion } from "../hooks/use-suggest";
+import { useSuggestion, getDayKey } from "../hooks/use-suggest";
 import { elements } from "../theme";
 import { FilterModal } from "./FilterModal";
-import { useState } from "react";
-
+import { useState, useEffect, useCallback, useRef } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 export const SuggestionSection = () => {
   const [filters, setFilters] = useState({});
   const { data: suggestion, isLoading, error, refresh } = useSuggestion(filters);
   const [modalVisible, setModalVisible] = useState(false);
+  const lastDayKeyRef = useRef(getDayKey());
+  
+  useEffect(() => {
+    if (suggestion) {
+      lastDayKeyRef.current = getDayKey();
+    }
+  }, [suggestion]);
+
+  useFocusEffect(
+    useCallback(() => {
+      const currentDayKey = getDayKey();
+      if (currentDayKey !== lastDayKeyRef.current) {
+        refresh();
+      }
+    }, [refresh])
+  );
 
   const handleFilterPress = () => {
     setModalVisible(true);

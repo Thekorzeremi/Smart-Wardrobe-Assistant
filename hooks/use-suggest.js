@@ -3,6 +3,18 @@ import { useAuth } from '../contexts/AuthContext';
 import { fetchSuggestion } from '../services/ai_n8n_service';
 import { fetchWeather } from '../services/weatherService';
 
+
+export const getDayKey = () => {
+  const now = new Date();
+  const currentHour = now.getHours();
+  const referenceDate = new Date(now);
+  if (currentHour < 5) {
+    referenceDate.setDate(referenceDate.getDate() - 1);
+  }
+  return referenceDate.toISOString().slice(0, 10);
+};
+
+
 export function useSuggestion(filters = {}) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -18,16 +30,16 @@ export function useSuggestion(filters = {}) {
     },
     enabled: !!user,
     staleTime: 1000 * 60 * 30,
-    cacheTime: 1000 * 60 * 60 * 12,
+    cacheTime: 1000 * 60 * 60 * 24,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
     retry: 1,
   });
 
   // Refresh 
   const refresh = () => {
-    queryClient.invalidateQueries({ queryKey: ['suggestion', user?.id, filters] });
+    queryClient.invalidateQueries({ queryKey: ['suggestion', user?.id, getDayKey(), filters] });
   };
 
   return { ...query, refresh };
