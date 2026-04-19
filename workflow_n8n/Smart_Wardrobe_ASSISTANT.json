@@ -1,0 +1,333 @@
+{
+  "name": "Smart_Wardrobe_ASSISTANT",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "smart-wardrobe-weather",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        384,
+        -64
+      ],
+      "id": "b1767fbe-165a-44a0-98a4-5ae43c4a175d",
+      "name": "Webhook",
+      "webhookId": "38de40b4-0a3c-463a-a32a-fa8ba21438ce"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=# PERSONA\nTu es un styliste personnel de haute couture, expert en morphologie et en stylisme climatique. Ton objectif est de créer une tenue cohérente, esthétique et parfaitement adaptée aux conditions météo.\n\n# CONTEXTE MÉTÉOROLOGIQUE\n- **Température ressentie** : {{ $('Webhook').item.json.body.weather.feelsLike || 20 }}°C\n- **Conditions** : {{ $('Webhook').item.json.body.weather.condition || 'Dégagé' }}\n- **Risque de pluie** : {{ $('Webhook').item.json.body.weather.precipitation || 0 }} mm\n- **Vent** : {{ $('Webhook').item.json.body.weather.windspeed || 0 }} km/h\n\n# GARDE-ROBE DISPONIBLE (JSON)\n{{ JSON.stringify($json.clothes) }}\n\n# PROCESSUS DE RÉFLEXION (interne)\n1. **Analyse Thermique** : Évalue le besoin de couches (layering) basé sur la température ressentie.\n2. **Analyse Hydrique** : Si précipitation > 0.2mm, privilégie des matières résistantes ou des chaussures fermées.\n3. **Sélection Esthétique** : Choisis des pièces dont les couleurs et les styles s'harmonisent.\n4. **Validation des IDs** : Vérifie que chaque `id` choisi existe réellement dans le JSON fourni.\n\n# DIRECTIVES DE SÉLECTION\n- **Tenue Complète** : sélectionne obligatoirement 1 Haut, 1 Bas et 1 Paire de chaussures.\n- **Superposition** : ajoute une veste, un manteau ou un accessoire uniquement si le ressenti ou les conditions le justifient.\n- **Cohérence** : ne suggère pas un short par 5°C, même si c'est le seul vêtement disponible (mentionne alors qu'il manque une pièce adaptée dans l'explication).\n\n# FORMAT DE RÉPONSE (JSON STRICT)\nTu dois répondre avec un objet JSON valide contenant exactement ces trois champs :\n- \"explanation\" (string)\n- \"selected_items_ids\" (array of strings, les UUIDs)\n- \"comfort_score\" (integer)\n\nExemple :\n{\n  \"explanation\": \"Pour une journée nuageuse à 18°C, le pull en laine gris est parfait avec le jean bleu. Les bottines marron sont imperméables et la veste en jean protège du vent.\",\n  \"selected_items_ids\": [\"ce9085cf-f922-4657-868e-f956daf945df\", \"1348510f-26c2-4bf4-b980-bc0780a5c7bf\", \"c8e660ad-9350-416b-b2b1-7d24ad07b6ee\", \"3ca487e9-a107-495f-89be-704d3131b880\"],\n  \"comfort_score\": 8\n}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "Tu es un \"Smart Wardrobe Stylist\" expert.  \nMission : Sélectionner la tenue idéale parmi une liste de vêtements fournie, en fonction de la météo et du confort de l'utilisateur.\n\nRègles strictes :\n1. Analyse la température, le vent et les précipitations.\n2. Priorise les couches (layering) si les températures sont changeantes.\n3. Retourne TOUJOURS un objet JSON valide avec les clés suivantes :\n   - \"explanation\" : texte court justifiant le choix (français, 1-2 phrases).\n   - \"selected_items_ids\" : liste des IDs des vêtements choisis (un tableau d'UUID).\n   - \"comfort_score\" : note entière de 1 à 10 sur l'adéquation météo.\n\nInterdictions :\n- Ne jamais proposer un vêtement absent de la liste fournie.\n- Ne jamais inclure le champ \"clothes\" dans la réponse.\n- La réponse doit être UNIQUEMENT l'objet JSON, sans texte avant ou après."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1008,
+        -272
+      ],
+      "id": "ea6aec5f-77c3-4d74-b6e9-8412351a0f2b",
+      "name": "AI Agent",
+      "retryOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "model": "google/gemini-2.0-flash-lite-001",
+        "options": {
+          "responseFormat": "json_object",
+          "temperature": 0.3,
+          "maxRetries": 3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1024,
+        -16
+      ],
+      "id": "53b45beb-7888-4f8f-b0e0-1cab92c98661",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "5KXs0qA8XyNLu94k",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "clothes",
+        "limit": 100,
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "user_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.body.user.id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        592,
+        -272
+      ],
+      "id": "0461a336-3f95-4113-8eef-ed4cf354c978",
+      "name": "Get many rows",
+      "credentials": {
+        "supabaseApi": {
+          "id": "rUs17RX5F4yozWdx",
+          "name": "Supabase account_WeatherProject"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "clothes",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        784,
+        128
+      ],
+      "id": "b1f7206e-eb29-424e-880b-17a86b552002",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawOutput = $input.first().json.output;\ntry {\n  return {\n    explanation: rawOutput.explanation,   // ← modifié ici\n    selected_items_ids: rawOutput.selected_items_ids, // déjà bon\n    comfort_score: rawOutput.comfort_score\n  };\n} catch (error) {\n  return {\n    error: \"Échec du formatage JSON\",\n    raw: rawOutput,\n    details: error\n  };\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1360,
+        -272
+      ],
+      "id": "8be91bd4-fdc5-49ce-9860-3cdc42944276",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "selected_items_ids",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1584,
+        96
+      ],
+      "id": "2248570b-e0f1-4ba6-8428-99e55c8c00e7",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "clothes",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{ $json.selected_items_ids }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        -256
+      ],
+      "id": "dc952186-8030-486c-a5cd-7d26d0f1fec1",
+      "name": "Get a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "rUs17RX5F4yozWdx",
+          "name": "Supabase account_WeatherProject"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "clothes",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1952,
+        80
+      ],
+      "id": "e0065fe0-d7bc-4a98-96f9-17ad07d87dd6",
+      "name": "Aggregate1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const clothesData = $input.first().json.clothes;\nconst explanationData = $('Code in JavaScript').first().json.explanation; \nconst orderedClothes = $('Code in JavaScript').first().json.selected_items_ids.map(id => \n  clothesData.find(item => item.id === id)\n).filter(Boolean);\nconst result = {\n  explanation: explanationData,\n  comfort_score: $('Code in JavaScript').first().json.comfort_score,\n  selected_items_ids: $('Code in JavaScript').first().json.selected_items_ids,\n  clothes: orderedClothes\n};\nreturn [result];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2176,
+        -160
+      ],
+      "id": "81c81894-5868-48b1-95e5-5c0c2f336def",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "\n{\n  \"explanation\": \"Pour une journée nuageuse avec 18°C, je propose un pull gris, un jean bleu et des bottines imperméables. Une veste en jean complète pour le vent léger.\",\n  \"selected_items_ids\": [\n    \"ce9085cf-f922-4657-868e-f956daf945df\",\n    \"1348510f-26c2-4bf4-b980-bc0780a5c7bf\",\n    \"c8e660ad-9350-416b-b2b1-7d24ad07b6ee\",\n    \"3ca487e9-a107-495f-89be-704d3131b880\"\n  ],\n  \"comfort_score\": 8\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1184,
+        -64
+      ],
+      "id": "649a2e41-32a0-4306-8133-3c9f5adda817",
+      "name": "Structured Output Parser"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get many rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many rows": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Get a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a row": {
+      "main": [
+        [
+          {
+            "node": "Aggregate1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "7b62ae24-866c-4356-9e09-9029a0ae03e0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "21ad7324b0abb295e562f7d5427a3895d1f982973f1d81a4e6e7078e03820ba8"
+  },
+  "id": "4k9VdZPMpMD5zJzC19pJu",
+  "tags": []
+}
