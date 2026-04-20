@@ -24,6 +24,7 @@ import { WardrobeEditModalContent } from "../components/WardrobeEditModalContent
 import { WardrobeCreateModalContent } from "../components/WardrobeCreateModalContent";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../contexts/AuthContext";
+import { WardrobeItem } from "../components/WardrobeItem";
 
 export const Wardrobe = () => {
   useRefreshOnFocus();
@@ -450,22 +451,4 @@ export const Wardrobe = () => {
   );
 };
 
-const WardrobeItem = ({ item, onPress }) => (
-  <TouchableOpacity
-    style={elements.wardrobeItemCard}
-    onPress={onPress}
-    activeOpacity={0.85}
-  >
-    {/* <View  /> */}
-    <View style={elements.wardrobeImagePlaceholder}>
-      <Image
-        resizeMode="cover"
-        source={{
-          uri: "https://media1.tenor.com/m/wb_rblUTxVAAAAAd/boat-kid-aura-farming-pacu-jalur.gif",
-        }}
-        style={elements.wardrobeItemImage}
-      />
-    </View>
-    <Text style={elements.wardrobeItemTitle}>{item.name}</Text>
-  </TouchableOpacity>
-);
+
