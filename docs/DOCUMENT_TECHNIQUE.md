@@ -191,28 +191,198 @@ Les champs `type`, `style`, `color`, `isWaterproof`, `temperatureMin/Max` sont u
 
 ## 7. Sécurité
 
-- **Variables d’environnement** : toutes les clés (Supabase, webhook n8n) sont stockées dans `.env` et chargées via `react-native-dotenv`. Le fichier `.env` est exclu du versionnement (`.gitignore`).
-- **Supabase RLS** : à mettre en place pour garantir l’isolation des données entre utilisateurs. Actuellement, les requêtes filtrées côté client sont fragiles.
-- **Authentification** : gestion des sessions via Supabase, mots de passe hashés.
-- **Communications** : toutes les API sont en HTTPS.
+### 7.1 Variables d’environnement
+- Toutes les clés API sensibles sont stockées dans le fichier `.env` à la racine du projet
+- Chargement via `react-native-dotenv` avec préfixe `EXPO_PUBLIC_` pour les variables accessibles côté client
+- Le fichier `.env` est exclu du versionnement (`.gitignore`) pour éviter l’exposition des credentials
+
+### 7.2 Row Level Security (RLS) Supabase
+**Implémenté sur toutes les tables :**
+
+#### Table `users`
+```sql
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can read own profile"
+  ON users FOR SELECT USING (auth.uid() = id);
+
+CREATE POLICY "Users can update own profile"
+  ON users FOR UPDATE USING (auth.uid() = id);
+
+CREATE POLICY "Users can insert own profile"
+  ON users FOR INSERT WITH CHECK (auth.uid() = id);
+```
+
+#### Table `clothes`
+```sql
+ALTER TABLE clothes ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can read own clothes"
+  ON clothes FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert own clothes"
+  ON clothes FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own clothes"
+  ON clothes FOR UPDATE USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete own clothes"
+  ON clothes FOR DELETE USING (auth.uid() = user_id);
+```
+
+#### Table `daily_suggestions`
+```sql
+ALTER TABLE daily_suggestions ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can read own suggestions"
+  ON daily_suggestions FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert own suggestions"
+  ON daily_suggestions FOR INSERT WITH CHECK (auth.uid() = user_id);
+```
+
+### 7.3 Edge Functions Supabase
+Deux fonctions edge sont déployées pour les opérations sensibles :
+
+1. **`delete-user`** : Suppression complète du compte utilisateur
+   - Supprime l’entrée dans `auth.users`
+   - Supprime les données associées dans `users`, `clothes`, `daily_suggestions`
+   - Nettoie les fichiers du bucket `clothes_image`
+
+2. **`reset-password`** : Réinitialisation sécurisée du mot de passe
+   - Validation du token JWT
+   - Appel à `supabase.auth.resetPasswordForEmail()`
+   - Gestion des erreurs et logs
+
+### 7.4 Storage Supabase
+- Bucket `clothes_image` configuré avec permissions `Public` pour les URLs directes
+- Policies RLS similaires aux tables pour contrôle d’accès
+- Les images sont uploadées via `storage-service.js` avec nommage unique
+
+### 7.5 Authentification et sessions
+- Hashage des mots de passe via Supabase Auth
+- Sessions persistées dans `AsyncStorage` avec expiration configurée
+- Tokens JWT avec expiration limitée
+- Communications HTTPS pour toutes les API externes
+
+### 7.6 Validation des inputs
+- Validation côté client des formulaires (login, register, création vêtement)
+- Sanitization des entrées utilisateur avant envoi aux services externes
+- Rate limiting côté n8n pour prévenir les abus sur l’API IA
 
 ---
 
-## 8. Améliorations possibles (roadmap technique)
+## 8. État du projet et roadmap technique
 
-| Piste | Description |
-|-------|-------------|
-| **Météo multi‑jours** | Étendre `weatherService` pour récupérer les prévisions sur 5‑7 jours et permettre la suggestion pour une date précise. |
-| **Upload photos** | Intégrer `expo-image-picker` + stockage dans Supabase bucket `clothes`. |
-| **CRUD vêtements** | Écrans d’ajout, modification, suppression avec formulaire et validation. |
-| **Suppression compte** | Ajouter un endpoint `deleteUser` qui supprime l’auth Supabase et la ligne `users`. |
-| **Mot de passe oublié** | Utiliser `supabase.auth.resetPasswordForEmail()`. |
-| **Tests** | Ajouter des tests unitaires (Jest) et end‑to‑end (Detox). |
-| **Notifications** | Rappel quotidien pour consulter la suggestion. |
+### 8.1 ✅ Fonctionnalités implémentées
+
+| Fonctionnalité | Statut | Détails |
+|---------------|--------|---------|
+| **Authentification complète** | ✅ Production | Login, register, reset password, delete account, edge functions |
+| **Météo temps réel** | ✅ Production | Open-Meteo API, géolocalisation, reverse geocoding |
+| **Suggestion IA quotidienne** | ✅ Production | Workflow n8n + Gemini 2.0, persistance DB, rafraîchissement auto |
+| **CRUD vêtements complet** | ✅ Production | Upload photos Supabase Storage, édition, suppression, validation |
+| **Interface moderne** | ✅ Production | Glassmorphism, animations, navigation personnalisée |
+| **Sécurité RLS** | ✅ Production | Policies sur toutes les tables + bucket storage |
+| **Cache intelligent** | ✅ Production | React Query + DB caching + refresh automatique |
+
+### 8.2 🔄 En cours de développement
+
+| Fonctionnalité | Priorité | Détails / Progression |
+|---------------|----------|----------------------|
+| **Suggestion multi‑jours** | HAUTE | Prévisions météo 5 jours + sélection date calendrier |
+| **Notifications push** | MOYENNE | Rappels quotidiens, Expo Notifications |
+| **Tests automatisés** | MOYENNE | Jest (unitaires) + Detox (E2E) |
+| **Mode hors-ligne amélioré** | BASSE | Cache intelligent, synchro automatique |
+
+### 8.3 📅 Améliorations futures
+
+| Amélioration | Description | Estimation |
+|--------------|-------------|------------|
+| **Analytics utilisateur** | Tracking anonymisé des suggestions, filtres utilisés | 2-3 jours |
+| **Partage de tenues** | Partage social des suggestions (réseaux sociaux) | 3-4 jours |
+| **Intégration calendrier** | Synchronisation avec Google Calendar/Apple Calendar | 4-5 jours |
+| **Recommandations achats** | Suggestions d’achats basées sur trous dans la garde-robe | 5-7 jours |
+| **Thèmes personnalisables** | Light/dark mode, couleurs personnalisables | 3-4 jours |
+
+### 8.4 🐛 Correctifs et optimisations
+
+| Problème | Solution proposée | Priorité |
+|----------|-------------------|----------|
+| **Validation formulaires** | Ajouter validation robuste + messages d’erreur UX | HAUTE |
+| **Gestion erreurs IA** | Meilleur fallback quand n8n/AI retourne erreur | MOYENNE |
+| **Performance images** | Lazy loading + cache local images | MOYENNE |
+| **Bundle size** | Tree-shaking, code splitting, optimisation assets | BASSE |
 
 ---
 
-## 9. Annexe – Exemple de payload n8n / réponse IA
+## 9. Guide de déploiement rapide
+
+### 9.1 Prérequis techniques
+- Node.js 18+ et npm/yarn
+- Compte Supabase (gratuit tier)
+- Instance n8n (cloud ou self-hosted)
+- Compte OpenRouter (pour clé API Gemini)
+
+### 9.2 Variables d'environnement critiques
+```env
+# ⚠️ Obligatoires
+EXPO_PUBLIC_SUPABASE_URL=https://votre-projet.supabase.co
+EXPO_PUBLIC_SUPABASE_KEY=votre_anon_public_key
+EXPO_PUBLIC_AI_WEBHOOK_URL=https://votre-n8n.com/webhook/smart-wardrobe-weather
+
+# 🌤️ Optionnel (URL par défaut utilisée)
+WEATHER_API_URL=https://api.open-meteo.com/v1/forecast
+
+# 📸 Configuration Storage (optionnel)
+S3_ENDPOINT=https://votre-projet.storage.supabase.co/storage/v1/s3
+S3_REGION=eu-west-1
+
+# 🔧 Développement local
+EXPO_PUBLIC_RESET_URL=exp://votre-ip:8081/--/reset-password
+```
+
+### 9.3 Déploiement Supabase étape par étape
+1. **Créer projet** : Dashboard Supabase → New Project
+2. **Configurer tables** : Exécuter les requêtes SQL de la section 7
+3. **Activer RLS** : Ajouter les policies comme documenté
+4. **Créer bucket** : Storage → New bucket → `clothes_image` (public)
+5. **Déployer edge functions** : CLI Supabase ou interface web
+
+### 9.4 Déploiement n8n
+1. **Importer workflow** : `workflow_n8n/Smart_Wardrobe_ASSISTANT.json`
+2. **Configurer credentials** : 
+   - OpenRouter API key
+   - Supabase credentials (pour requêter la BDD)
+3. **Créer webhook** : Copier l'URL générée
+4. **Tester le workflow** : Simuler une requête avec des données de test
+
+### 9.5 Test de l'application
+```bash
+# Installation
+npm install
+
+# Configuration
+cp .env.example .env  # Remplir avec vos valeurs
+
+# Lancement
+npm start  # ou npx expo start
+
+# Tester sur:
+# - Expo Go (scan QR code)
+# - iOS Simulator (macOS)
+# - Android Emulator
+# - Web (expo start --web)
+```
+
+### 9.6 Monitoring en production
+- **Supabase** : Dashboard → Logs, Database Health, Query Performance
+- **n8n** : Execution history, error logs, webhook statistics
+- **Application** : Console Expo, crash reports
+
+---
+
+## 10. Annexe – Exemple de payload n8n / réponse IA
 
 **Payload envoyé au webhook :**
 ```json
@@ -244,11 +414,45 @@ Les champs `type`, `style`, `color`, `isWaterproof`, `temperatureMin/Max` sont u
 
 ---
 
-## 10. Références
+## 11. Références techniques
 
-- [Documentation React Native](https://reactnative.dev)
-- [Expo SDK](https://docs.expo.dev)
-- [Supabase](https://supabase.com/docs)
-- [Open‑Meteo](https://open-meteo.com)
-- [n8n](https://docs.n8n.io)
-- [OpenRouter](https://openrouter.ai/docs)
+### Documentation officielle
+- [React Native Documentation](https://reactnative.dev/docs/getting-started)
+- [Expo SDK Documentation](https://docs.expo.dev)
+- [Supabase Documentation](https://supabase.com/docs)
+- [React Navigation](https://reactnavigation.org/docs/getting-started)
+- [React Query (TanStack)](https://tanstack.com/query/latest/docs/framework/react/overview)
+
+### Services externes
+- [Open‑Meteo API](https://open-meteo.com) – API météo gratuite
+- [n8n Documentation](https://docs.n8n.io) – Workflow automation
+- [OpenRouter API](https://openrouter.ai/docs) – Modèles LLM
+- [DiceBear Avatars](https://dicebear.com) – Génération avatars SVG
+
+### Outils de développement
+- [Expo Go](https://expo.dev/go) – Application de test
+- [Supabase CLI](https://supabase.com/docs/guides/cli) – Déploiement local
+- [n8n Desktop](https://docs.n8n.io/hosting/installation/desktop/) – Version desktop
+
+### Ressources pédagogiques
+- [React Native en français](https://www.reactnative.guide)
+- [Supabase en français](https://supabase.fr)
+- [Expo en français](https://docs.expo.dev/fr)
+
+---
+
+## 12. Licence et contribution
+
+### Licence
+Ce projet est sous licence MIT – libre d'utilisation, modification et distribution.
+
+### Contribution
+Les contributions sont les bienvenues ! Pour contribuer :
+1. Fork le repository
+2. Créer une branche feature (`git checkout -b feature/amazing-feature`)
+3. Commiter les changements (`git commit -m 'Add amazing feature'`)
+4. Pousser vers la branche (`git push origin feature/amazing-feature`)
+5. Ouvrir une Pull Request
+
+### Code de conduite
+Respectez les autres contributeurs et maintenez une atmosphère collaborative et inclusive.
