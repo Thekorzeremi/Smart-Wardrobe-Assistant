@@ -30,8 +30,6 @@ export const Register = ({ navigation }) => {
     setLoading(true);
     try {
       await signUp(email, password);
-      Alert.alert("Succès", "Compte créé ! Vous pouvez vous connecter.");
-      navigation.navigate("Login");
     } catch (error) {
       Alert.alert("Erreur", error.message);
     } finally {

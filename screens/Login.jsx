@@ -57,6 +57,12 @@ export const Login = ({ navigation }) => {
             value={password}
             onChangeText={setPassword}
           />
+          <TouchableOpacity
+            onPress={() => navigation.navigate("ForgotPassword")}
+            style={{}}
+          >
+            <Text style={authStyles.forgotLink}>Mot de passe oublié ?</Text>
+          </TouchableOpacity>
 
           <TouchableOpacity
             style={authStyles.button}

@@ -5,7 +5,11 @@ export const colors = {
   backgroundHomeLinearTo: "#002863",
   backgroundOtherLinearFrom: "#3F3F47",
   backgroundOtherLinearTo: "#070709",
-  card: {
+  cardHome: {
+    backgroundColor: "#788eff24",
+    borderColor: "#ffffff24",
+  },
+  cardWardrobe: {
     backgroundColor: "#151A31",
     borderColor: "#363A4E",
   },
@@ -34,6 +38,7 @@ export const colors = {
     blurSideIntensity: 24,
     blurTint: "transparent",
   },
+  button: { backgroundColor: "#788eff24", borderColor: "#ffffff24" },
 };
 
 export const text = StyleSheet.create({
@@ -47,9 +52,14 @@ export const text = StyleSheet.create({
     fontSize: 18,
     fontWeight: "400",
   },
-  text: {
+  textMedium: {
     fontFamily: "SFProDisplay-Regular",
-    fontSize: 12,
+    fontSize: 16,
+    fontWeight: "500",
+  },
+  textSmall: {
+    fontFamily: "SFProDisplay-Regular",
+    fontSize: 14,
     fontWeight: "400",
   },
 });
@@ -103,18 +113,30 @@ export const authStyles = StyleSheet.create({
     borderRadius: 14,
     padding: 14,
     alignItems: "center",
-    marginTop: 16,
+    marginTop: 20,
   },
   buttonText: {
     color: "#fff",
     fontSize: 18,
     fontWeight: "600",
   },
+  forgotLink: {
+    color: "#788eff",
+    textAlign: "center",
+    fontSize: 16,
+    marginVertical: 4,
+  },
   link: {
     color: "#788eff",
     textAlign: "center",
     marginTop: 24,
     fontSize: 16,
+  },
+  error: {
+    color: "#ff5f69",
+    textAlign: "center",
+    marginBottom: 12,
+    fontSize: 14,
   },
 });
 
@@ -125,7 +147,8 @@ export const profileStyles = StyleSheet.create({
     alignItems: "center",
     paddingTop: 92,
     paddingHorizontal: 20,
-    paddingBottom: 110,
+    paddingBottom: 130,
+    justifyContent: "space-between",
   },
   avatar: {
     width: 104,
@@ -173,14 +196,25 @@ export const profileStyles = StyleSheet.create({
     paddingHorizontal: 16,
     gap: 14,
   },
+  menuItemContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    paddingVertical: 8,
+  },
   menuItem: {
     color: "#f3f5ff",
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "500",
+  },
+  menuItemDestructive: {
+    color: "#ff5f69",
+    fontSize: 18,
+    fontWeight: "600",
   },
   logout: {
     color: "#ff5f69",
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "600",
   },
 });
@@ -209,8 +243,8 @@ export const elements = StyleSheet.create({
     flex: 1,
   },
   card: {
-    backgroundColor: colors.card.backgroundColor,
-    borderColor: colors.card.borderColor,
+    backgroundColor: colors.cardHome.backgroundColor,
+    borderColor: colors.cardHome.borderColor,
     borderRadius: 10,
   },
   title: {
@@ -221,9 +255,13 @@ export const elements = StyleSheet.create({
     color: colors.textSubtitle,
     ...text.subtitle,
   },
-  text: {
+  textSmall: {
     color: colors.text,
-    ...text.text,
+    ...text.textSmall,
+  },
+  textMedium: {
+    color: colors.text,
+    ...text.textMedium,
   },
   glassTabMainPill: {
     flex: 1,
@@ -721,5 +759,32 @@ export const elements = StyleSheet.create({
     backgroundColor: "rgba(255,0,0,0.3)",
     padding: 12,
     borderRadius: 14,
+  },
+  imagePlaceholder: {
+    height: 100,
+    borderRadius: 12,
+    backgroundColor: "rgba(255,255,255,0.13)",
+    marginBottom: 10,
+    overflow: "hidden",
+  },
+  itemCard: {
+    borderRadius: 18,
+    borderWidth: 1,
+    padding: 10,
+    marginBottom: 12,
+  },
+  itemTitle: {
+    color: "#eef1ff",
+    fontSize: 15,
+    fontWeight: "500",
+  },
+  homeGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginTop: 10,
+  },
+  homeGridItem: {
+    width: "48%",
+    padding: 4,
   },
 });

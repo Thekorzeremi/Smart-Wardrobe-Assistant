@@ -15,10 +15,10 @@ import {
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { useGetClothesQuery } from "../services/wardrobe-service";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRefreshOnFocus } from "../hooks/use-refresh-on-focus";
 import { elements } from "../theme";
+import { useRefreshOnFocus } from "../hooks/use-refresh-on-focus";
+import { useGetClothesQuery } from "../services/wardrobe-service";
 import { useEffect, useRef, useState } from "react";
 import { Pencil, X } from "lucide-react-native";
 import * as ImagePicker from "expo-image-picker";

@@ -1,27 +1,33 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView, Text, View, ActivityIndicator } from "react-native";
 import { HomeHeader } from "../components/HomeHeader";
 import { WeatherCarousel } from "../components/WeatherCarousel";
-import { elements } from "../theme";
+import { colors, elements } from "../theme";
+import {useAuth} from "../contexts/AuthContext";
+import { SuggestionSection } from "../components/SuggestionSection";
 
 export const Home = () => {
+  const { userData, loading: authLoading } = useAuth();
+  const username = userData?.username || "Utilisateur";
+
+  if (authLoading) {
+    return (
+        <View style={[elements.homeBackground, { justifyContent: 'center' }]}>
+          <ActivityIndicator size="large" color={colors.primary} />
+        </View>
+    );
+  }
   return (
     <LinearGradient
-      colors={["rgba(0, 45, 101, 0.8)", "rgba(0, 9, 20, 0.8)"]}
+      colors={[colors.backgroundHomeLinearFrom, colors.backgroundHomeLinearTo]}
       start={{ x: 0, y: 0.1 }}
       style={elements.homeBackground}
     >
       <ScrollView contentContainerStyle={elements.homeContainer}>
-        <HomeHeader />
+        <HomeHeader username={username}/>
         <WeatherCarousel />
-
-        <View style={elements.homeCard}>
-          <Text style={elements.homeCardTitle}>Suggestion du jour</Text>
-          <Text style={elements.homeCardText}>
-            Il fait doux aujourd'hui. Pense a une tenue legere avec une veste fine.
-          </Text>
-        </View>
-
+        <SuggestionSection />
+        
         <View style={elements.homeCard}>
           <Text style={elements.homeCardTitle}>Prochaine etape</Text>
           <Text style={elements.homeCardText}>
