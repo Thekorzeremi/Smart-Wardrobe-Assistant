@@ -51,7 +51,10 @@ function AppTabs() {
     if (routeName === "Armoire") {
       return {
         Icon: Plus,
-        onPress: () => {},
+        onPress: () => {
+          navigation.navigate("Armoire", { openAddModal: true });
+          return false;
+        },
       };
     }
 
