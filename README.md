@@ -288,10 +288,10 @@ Les fonctions edge pour la suppression de compte et réinitialisation mot de pas
 
 ## 👥 Équipe
 
+- **Conambot NGUESSAN** ([@WilFriite](https://github.com/WilFriite)) – Supabase integration (DB, storage), gestion des vêtements, persistance des données, React Query, bucket configuration.
+- **Julie SAINT MARTIN** ([@jstm17](https://github.com/jstm17)) – Services d'authentification (reset password, delete account), météo, UI elements, optimisation des performances.
+- **Rémi KORZENIOWSKI** ([@Thekorzeremi](https://github.com/Thekorzeremi)) – UI/UX, navigation, glassmorphism, intégration, theming, composants réutilisables.
 - **Seer MENSAH ASSIAKOLEY** ([@MaashRees](https://github.com/MaashRees)) – IA, n8n, filtres, suggestion, logique métier, rafraîchissement automatique, Policies RLS, Supabase backend services, edge functions.
-- **WilFriite** ([@WilFriite](https://github.com/WilFriite)) – Supabase integration (DB, storage), gestion des vêtements, persistance des données, React Query, bucket configuration.
-- **Thekorzeremi** ([@Thekorzeremi](https://github.com/Thekorzeremi)) – UI/UX, navigation, glassmorphism, intégration, theming, composants réutilisables.
-- **jstm17** ([@jstm17](https://github.com/jstm17)) – Services d'authentification (reset password, delete account), météo, UI elements, optimisation des performances.
 
 ---
 
