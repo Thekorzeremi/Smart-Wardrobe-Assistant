@@ -42,7 +42,7 @@ export const SuggestionSection = () => {
   };
 
   const handleRefreshPress = () => {
-    refresh();
+    refresh(true);
   };
 
   return (
