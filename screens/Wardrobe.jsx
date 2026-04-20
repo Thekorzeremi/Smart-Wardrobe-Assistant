@@ -30,7 +30,8 @@ export const Wardrobe = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const queryClient = useQueryClient();
-	const { data: userData, user } = useAuth();
+	const { userData } = useAuth();
+  const username = userData?.username || "Utilisateur";
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -54,7 +55,7 @@ export const Wardrobe = () => {
     }
   }, [navigation, route.params?.openAddModal]);
 
-  const { data, isLoading, error, refetch } = useGetClothesQuery(user?.id);
+  const { data, isLoading, error, refetch } = useGetClothesQuery(userData?.id);
 
   const openClothingModal = (item) => {
     setSelectedClothing(item);
@@ -265,7 +266,7 @@ export const Wardrobe = () => {
           onPress: async () => {
             try {
               setIsDeletingClothing(true);
-              await deleteClothes({ clothingId: selectedId, userId: user?.id });
+              await deleteClothes({ clothingId: selectedId, userId: userData?.id });
               await queryClient.invalidateQueries({ queryKey: ["clothes"] });
               setIsDeletingClothing(false);
               closeClothingModal();
@@ -288,8 +289,7 @@ export const Wardrobe = () => {
     closeClothingModal();
   };
 
-	console.log("userData", userData);
-	console.log("user", user);
+	console.log("user", username);
 
   return (
     <SafeAreaView style={elements.wardrobeContainer} edges={["top", "bottom"]}>
@@ -297,7 +297,7 @@ export const Wardrobe = () => {
         style={isModalOpen || isEditModalOpen || isAddModalOpen ? "dark" : "light"}
       />
       <Text style={elements.wardrobeTitle}>Mon Armoire</Text>
-      <Text style={{ color: "red" }}>{JSON.stringify(userData, null, 2)}</Text>
+      <Text style={elements.homeHeaderHello}>Tu peux consulter ta garde robe ici, {username}</Text>
       {isLoading ? <ActivityIndicator size="large" color="#f3f5ff" /> : null}
       {error ? (
         <View>
@@ -403,7 +403,7 @@ export const Wardrobe = () => {
               ) : (
                 <WardrobeEditModalContent
                   selectedClothing={selectedClothing}
-                  userId={user?.id}
+                  userId={userData?.id}
                   editOpacity={editOpacity}
                   editTranslateY={editTranslateY}
                   getImageUri={getImageUri}
@@ -438,7 +438,7 @@ export const Wardrobe = () => {
           >
             <WardrobeCreateModalContent
               isVisible={isAddModalOpen}
-              userId={user?.id}
+              userId={userData?.id}
               onCreatingStateChange={setIsCreatingClothing}
               saveButtonStyle={saveButtonStyle}
               onClose={closeAddModal}

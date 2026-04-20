@@ -1,4 +1,6 @@
 import { supabase } from "./supabase";
+import { readAsStringAsync, EncodingType } from 'expo-file-system/legacy';
+import { decode } from 'base64-arraybuffer';
 
 const DEFAULT_WARDROBE_BUCKET = "clothes_image";
 
@@ -9,9 +11,9 @@ const getFileExtensionFromUri = (uri) => {
 };
 
 const getMimeType = (ext) => {
-  if (ext === "png") return "image/png";
-  if (ext === "webp") return "image/webp";
-  if (ext === "gif") return "image/gif";
+  if (ext.toLowerCase() === "png") return "image/png";
+  if (ext.toLowerCase() === "webp") return "image/webp";
+  if (ext.toLowerCase() === "gif") return "image/gif";
   return "image/jpeg";
 };
 
@@ -22,29 +24,26 @@ export const uploadImageToSupabaseStorage = async ({ userId, localUri, folder = 
   if (!localUri) {
     throw new Error("Image locale manquante.");
   }
-
+  try {
   const extension = getFileExtensionFromUri(localUri);
   const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${extension}`;
   const filePath = `${folder}/${fileName}`;
-
-  const response = await fetch(localUri);
-  const blob = await response.blob();
-
+  const base64 = await readAsStringAsync(localUri, {
+    encoding: EncodingType.Base64,
+  });
   const { error: uploadError } = await supabase.storage
-    .from(DEFAULT_WARDROBE_BUCKET)
-    .upload(filePath, blob, {
-      contentType: getMimeType(extension),
-      upsert: false,
-    });
+      .from(DEFAULT_WARDROBE_BUCKET)
+      .upload(filePath, decode(base64), {
+        contentType: getMimeType(extension),
+        upsert: true,
+      });
 
-  if (uploadError) {
-    throw uploadError;
+    if (uploadError) throw uploadError;
+
+    const { data } = supabase.storage.from(DEFAULT_WARDROBE_BUCKET).getPublicUrl(filePath);
+    return data.publicUrl;
+  } catch (error) {
+    console.error("Upload error details:", error);
+    throw error;
   }
-
-  const { data } = supabase.storage.from(DEFAULT_WARDROBE_BUCKET).getPublicUrl(filePath);
-  if (!data?.publicUrl) {
-    throw new Error("Impossible de récupérer l'URL publique de l'image.");
-  }
-
-  return data.publicUrl;
 };

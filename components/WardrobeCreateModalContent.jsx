@@ -109,6 +109,8 @@ export const WardrobeCreateModalContent = ({
     });
 
     if (!result.canceled && result.assets?.[0]?.uri) {
+      const uri = result.assets[0].uri;
+      setPickedImage(uri);
       await handleUploadPickedImage(result.assets[0].uri);
     }
   };
@@ -126,7 +128,9 @@ export const WardrobeCreateModalContent = ({
     });
 
     if (!result.canceled && result.assets?.[0]?.uri) {
-      await handleUploadPickedImage(result.assets[0].uri);
+      const uri = result.assets[0].uri;
+      setPickedImage(uri);
+      await handleUploadPickedImage(uri);
     }
   };
 
