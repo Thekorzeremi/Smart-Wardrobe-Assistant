@@ -5,6 +5,7 @@ import { X } from "lucide-react-native";
 import { useQueryClient } from "@tanstack/react-query";
 import { elements } from "../theme";
 import { useCreateClothesMutation } from "../services/wardrobe-service";
+import { uploadImageToSupabaseStorage } from "../services/storage-service";
 
 const emptyAddForm = {
   name: "",
@@ -38,6 +39,7 @@ export const WardrobeCreateModalContent = ({
   const queryClient = useQueryClient();
   const { mutate: createClothes, isPending: isCreatingClothing } = useCreateClothesMutation();
   const [newClothing, setNewClothing] = useState(emptyAddForm);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
 
   useEffect(() => {
     if (typeof onCreatingStateChange === "function") {
@@ -74,6 +76,25 @@ export const WardrobeCreateModalContent = ({
     handleAddFieldChange("image_url", uri);
   };
 
+  const handleUploadPickedImage = async (localUri) => {
+    if (!localUri) {
+      return;
+    }
+
+    try {
+      setIsUploadingImage(true);
+      const publicUrl = await uploadImageToSupabaseStorage({
+        userId,
+        localUri,
+      });
+      setPickedImage(publicUrl);
+    } catch (uploadError) {
+      Alert.alert("Photo", uploadError?.message ?? "Erreur pendant l'upload de l'image.");
+    } finally {
+      setIsUploadingImage(false);
+    }
+  };
+
   const openImageLibrary = async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) {
@@ -82,13 +103,13 @@ export const WardrobeCreateModalContent = ({
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: "images",
       allowsEditing: true,
       quality: 0.85,
     });
 
     if (!result.canceled && result.assets?.[0]?.uri) {
-      setPickedImage(result.assets[0].uri);
+      await handleUploadPickedImage(result.assets[0].uri);
     }
   };
 
@@ -105,7 +126,7 @@ export const WardrobeCreateModalContent = ({
     });
 
     if (!result.canceled && result.assets?.[0]?.uri) {
-      setPickedImage(result.assets[0].uri);
+      await handleUploadPickedImage(result.assets[0].uri);
     }
   };
 
@@ -137,6 +158,7 @@ export const WardrobeCreateModalContent = ({
           ? null
           : maxTemperatureValue
         : null,
+      image_url: newClothing.image_url.trim() || null,
       is_waterproof: Boolean(newClothing.is_waterproof),
     };
 
@@ -187,12 +209,24 @@ export const WardrobeCreateModalContent = ({
         />
 
         <View style={{ flexDirection: "row", gap: 10 }}>
-          <TouchableOpacity onPress={openImageLibrary} activeOpacity={0.85} style={imageActionButtonStyle}>
+          <TouchableOpacity
+            onPress={openImageLibrary}
+            activeOpacity={0.85}
+            style={imageActionButtonStyle}
+            disabled={isUploadingImage || isCreatingClothing}
+          >
             <Text style={elements.wardrobeModalActionText}>Choisir une photo</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={openCamera} activeOpacity={0.85} style={imageActionButtonStyle}>
-            <Text style={elements.wardrobeModalActionText}>Prendre une photo</Text>
+          <TouchableOpacity
+            onPress={openCamera}
+            activeOpacity={0.85}
+            style={imageActionButtonStyle}
+            disabled={isUploadingImage || isCreatingClothing}
+          >
+            <Text style={elements.wardrobeModalActionText}>
+              {isUploadingImage ? "Upload..." : "Prendre une photo"}
+            </Text>
           </TouchableOpacity>
         </View>
 
@@ -324,10 +358,10 @@ export const WardrobeCreateModalContent = ({
           ]}
           onPress={handleCreateClothingPress}
           activeOpacity={0.86}
-          disabled={isCreatingClothing}
+          disabled={isCreatingClothing || isUploadingImage}
         >
           <Text style={elements.wardrobeModalActionText}>
-            {isCreatingClothing ? "Création..." : "Créer"}
+            {isUploadingImage ? "Upload image..." : isCreatingClothing ? "Création..." : "Créer"}
           </Text>
         </TouchableOpacity>
       </ScrollView>
