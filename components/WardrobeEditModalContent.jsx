@@ -12,6 +12,7 @@ import * as ImagePicker from "expo-image-picker";
 import { useQueryClient } from "@tanstack/react-query";
 import { elements } from "../theme";
 import { useUpdateClothesMutation } from "../services/wardrobe-service";
+import { uploadImageToSupabaseStorage } from "../services/storage-service";
 
 export const WardrobeEditModalContent = ({
   selectedClothing,
@@ -27,6 +28,7 @@ export const WardrobeEditModalContent = ({
   const queryClient = useQueryClient();
   const { mutate: updateClothes, isPending: isSavingEdit } = useUpdateClothesMutation();
   const [editedClothing, setEditedClothing] = useState(selectedClothing ?? {});
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
 
   useEffect(() => {
     if (typeof onSavingStateChange === "function") {
@@ -78,6 +80,25 @@ export const WardrobeEditModalContent = ({
     }));
   };
 
+  const handleUploadPickedImage = async (localUri) => {
+    if (!localUri) {
+      return;
+    }
+
+    try {
+      setIsUploadingImage(true);
+      const publicUrl = await uploadImageToSupabaseStorage({
+        userId,
+        localUri,
+      });
+      setEditedPickedImage(publicUrl);
+    } catch (uploadError) {
+      Alert.alert("Photo", uploadError?.message ?? "Erreur pendant l'upload de l'image.");
+    } finally {
+      setIsUploadingImage(false);
+    }
+  };
+
   const openEditImageLibrary = async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) {
@@ -86,13 +107,13 @@ export const WardrobeEditModalContent = ({
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: "images",
       allowsEditing: true,
       quality: 0.85,
     });
 
     if (!result.canceled && result.assets?.[0]?.uri) {
-      setEditedPickedImage(result.assets[0].uri);
+      await handleUploadPickedImage(result.assets[0].uri);
     }
   };
 
@@ -109,12 +130,12 @@ export const WardrobeEditModalContent = ({
     });
 
     if (!result.canceled && result.assets?.[0]?.uri) {
-      setEditedPickedImage(result.assets[0].uri);
+      await handleUploadPickedImage(result.assets[0].uri);
     }
   };
 
   const handleSaveEditPress = () => {
-    if (isSavingEdit) {
+    if (isSavingEdit || isUploadingImage) {
       return;
     }
 
@@ -144,6 +165,7 @@ export const WardrobeEditModalContent = ({
           ? null
           : maxTemperatureValue
         : null,
+      image_url: editedClothing.image_url?.trim() || null,
       is_waterproof:
         editedClothing.is_waterproof == null
           ? null
@@ -187,6 +209,7 @@ export const WardrobeEditModalContent = ({
         <TouchableOpacity
           onPress={openEditImageLibrary}
           activeOpacity={0.85}
+          disabled={isSavingEdit || isUploadingImage}
           style={{
             flex: 1,
             paddingVertical: 12,
@@ -204,6 +227,7 @@ export const WardrobeEditModalContent = ({
         <TouchableOpacity
           onPress={openEditCamera}
           activeOpacity={0.85}
+          disabled={isSavingEdit || isUploadingImage}
           style={{
             flex: 1,
             paddingVertical: 12,
@@ -242,10 +266,10 @@ export const WardrobeEditModalContent = ({
         ]}
         onPress={handleSaveEditPress}
         activeOpacity={0.86}
-        disabled={isSavingEdit}
+        disabled={isSavingEdit || isUploadingImage}
       >
         <Text style={elements.wardrobeModalActionText}>
-          {isSavingEdit ? "Enregistrement..." : "Enregistrer"}
+          {isUploadingImage ? "Upload image..." : isSavingEdit ? "Enregistrement..." : "Enregistrer"}
         </Text>
       </TouchableOpacity>
     </Animated.View>

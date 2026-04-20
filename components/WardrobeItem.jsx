@@ -1,31 +1,21 @@
-import { Image, StyleSheet, Text, View } from "react-native";
-import { colors, elements } from "../theme";
+import { Image, Text, View, TouchableOpacity} from "react-native";
+import { elements } from "../theme";
 
-export const WardrobeItem = ({ item, variant = "wardrobe" }) => (
-  <View key={item} style={[elements.itemCard, variantStyles[variant]]}>
-    {/* <View  /> */}
-    <View style={elements.imagePlaceholder}>
+export const WardrobeItem = ({ item, onPress }) => (
+  <TouchableOpacity
+    style={elements.wardrobeItemCard}
+    onPress={onPress}
+    activeOpacity={0.85}
+  >
+    <View style={elements.wardrobeImagePlaceholder}>
       <Image
         resizeMode="cover"
         source={{
-          uri: "https://media1.tenor.com/m/wb_rblUTxVAAAAAd/boat-kid-aura-farming-pacu-jalur.gif",
+          uri: item.image_url || "https://media1.tenor.com/m/wb_rblUTxVAAAAAd/boat-kid-aura-farming-pacu-jalur.gif",
         }}
-        style={{ width: "100%", height: "100%" }}
+        style={elements.wardrobeItemImage}
       />
     </View>
-    <Text style={elements.itemTitle}>{item.name}</Text>
-  </View>
+    <Text style={elements.wardrobeItemTitle}>{item.name}</Text>
+  </TouchableOpacity>
 );
-
-const variantStyles = {
-  home: {
-    backgroundColor: colors.cardHome.backgroundColor,
-    borderColor: colors.cardHome.borderColor,
-    width: "100%",
-  },
-  wardrobe: {
-    backgroundColor: colors.cardWardrobe.backgroundColor,
-    borderColor: colors.cardWardrobe.borderColor,
-    width: "48%",
-  },
-};
