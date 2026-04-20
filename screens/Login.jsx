@@ -1,14 +1,14 @@
+import FrostedCard from "../components/FrostedCard";
+import { Layout } from "../components/Layout";
 import { useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
+  View,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
-import FrostedCard from "../components/FrostedCard";
-import { Layout } from "../components/Layout";
 import { useAuth } from "../contexts/AuthContext";
 import { authStyles } from "../theme";
 
@@ -77,9 +77,7 @@ export const Login = ({ navigation }) => {
           </TouchableOpacity>
 
           <TouchableOpacity onPress={() => navigation.navigate("Register")}>
-            <Text style={authStyles.link}>
-              Pas encore de compte ? Créer un compte
-            </Text>
+            <Text style={authStyles.link}>Pas encore de compte ? Créer un compte</Text>
           </TouchableOpacity>
         </FrostedCard>
       </View>

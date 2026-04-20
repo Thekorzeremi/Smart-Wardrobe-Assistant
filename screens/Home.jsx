@@ -31,8 +31,8 @@ export const Home = () => {
         <View style={elements.homeCard}>
           <Text style={elements.homeCardTitle}>Prochaine etape</Text>
           <Text style={elements.homeCardText}>
-            Va dans l'onglet Armoire pour afficher ta garde-robe, ou Profil pour
-            modifier ton compte.
+            Va dans l'onglet Armoire pour afficher ta garde-robe, ou Profil pour modifier
+            ton compte.
           </Text>
         </View>
       </ScrollView>

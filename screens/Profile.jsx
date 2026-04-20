@@ -1,10 +1,5 @@
 import { EXPO_PUBLIC_RESET_URL } from "@env";
-import {
-  KeyRoundIcon,
-  LogOutIcon,
-  PencilIcon,
-  Trash,
-} from "lucide-react-native";
+import { KeyRoundIcon, LogOutIcon, PencilIcon, Trash } from "lucide-react-native";
 import { useState } from "react";
 import { Alert, Text, TouchableOpacity, View } from "react-native";
 import { Avatar } from "../components/Avatar";
@@ -18,17 +13,12 @@ export const Profile = ({ navigation }) => {
   const [error, setError] = useState("");
   const { deleteAccount } = useDeleteAccount();
 
-  const username =
-    userData?.username || user?.email?.split("@")[0] || "Utilisateur";
+  const username = userData?.username || user?.email?.split("@")[0] || "Utilisateur";
   const email = user?.email || "";
-  const location = [userData?.city, userData?.country]
-    .filter(Boolean)
-    .join(", ");
+  const location = [userData?.city, userData?.country].filter(Boolean).join(", ");
 
   const handleChangePassword = async () => {
-    const resetUrl = __DEV__
-      ? EXPO_PUBLIC_RESET_URL
-      : "SmartWardrobe://reset-password";
+    const resetUrl = __DEV__ ? EXPO_PUBLIC_RESET_URL : "SmartWardrobe://reset-password";
 
     console.log(resetUrl);
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
@@ -106,14 +96,9 @@ export const Profile = ({ navigation }) => {
           },
         ]}
       >
-        <TouchableOpacity
-          onPress={deleteAccount}
-          style={profileStyles.menuItemContainer}
-        >
+        <TouchableOpacity onPress={deleteAccount} style={profileStyles.menuItemContainer}>
           <Trash color="#ff5f69" strokeWidth={1.5} size={20} />
-          <Text style={profileStyles.menuItemDestructive}>
-            Supprimer le compte
-          </Text>
+          <Text style={profileStyles.menuItemDestructive}>Supprimer le compte</Text>
         </TouchableOpacity>
       </View>
     </View>

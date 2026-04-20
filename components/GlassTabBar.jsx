@@ -16,7 +16,7 @@ const INACTIVE_ICON_COLOR = colors.glassTab.iconInactive;
 const SIDE_ICON_COLOR = colors.glassTab.sideIcon;
 const DRAG_ACTIVATION_PX = 8;
 
-export function GlassTabBar({ state, descriptors, navigation }) {
+export function GlassTabBar({ state, descriptors, navigation, getSideActionConfig }) {
   const insets = useSafeAreaInsets();
   const [pillWidth, setPillWidth] = useState(0);
   const [visualActiveIndex, setVisualActiveIndex] = useState(state.index);
@@ -31,6 +31,56 @@ export function GlassTabBar({ state, descriptors, navigation }) {
   const dragBubbleXRef = useRef(0);
   const pillPageXRef = useRef(0);
   const visualActiveIndexRef = useRef(state.index);
+
+  const activeRoute = state.routes[state.index];
+
+  const sideActionConfig = useMemo(() => {
+    const configFromProp =
+      typeof getSideActionConfig === "function"
+        ? getSideActionConfig({
+            route: activeRoute,
+            routeName: activeRoute?.name,
+            navigation,
+            state,
+            descriptors,
+          })
+        : null;
+
+    const configFromScreen = activeRoute
+      ? descriptors[activeRoute.key]?.options?.sideAction
+      : null;
+
+    return {
+      ...(configFromScreen ?? {}),
+      ...(configFromProp ?? {}),
+    };
+  }, [activeRoute, descriptors, getSideActionConfig, navigation, state]);
+
+  const SideActionIcon = sideActionConfig.Icon ?? sideActionConfig.icon ?? Coffee;
+  const sideActionIconColor = sideActionConfig.iconColor ?? SIDE_ICON_COLOR;
+  const sideActionIconSize = sideActionConfig.iconSize ?? 20;
+  const sideActionIconStrokeWidth = sideActionConfig.iconStrokeWidth ?? 2.1;
+
+  const onSideActionPress = () => {
+    const context = {
+      route: activeRoute,
+      routeName: activeRoute?.name,
+      navigation,
+      state,
+      descriptors,
+    };
+
+    if (typeof sideActionConfig.onPress === "function") {
+      const shouldContinue = sideActionConfig.onPress(context);
+      if (shouldContinue === false) {
+        return;
+      }
+    }
+
+    if (typeof sideActionConfig.navigateTo === "string") {
+      navigation.navigate(sideActionConfig.navigateTo, sideActionConfig.navigateParams);
+    }
+  };
 
   const tabWidth = useMemo(() => {
     if (pillWidth <= 0 || state.routes.length === 0) {
@@ -375,7 +425,7 @@ export function GlassTabBar({ state, descriptors, navigation }) {
   }, [bubbleScaleX, bubbleScaleY, state.index, tabWidth, translateX]);
 
   return (
-    <View style={[elements.glassTabWrapper, { bottom: Math.max(insets.bottom, 10) }]}>
+    <View style={[elements.glassTabWrapper, { bottom: Math.max(insets.bottom - 16, 6) }]}>
       <View
         ref={mainPillRef}
         style={elements.glassTabMainPill}
@@ -468,17 +518,27 @@ export function GlassTabBar({ state, descriptors, navigation }) {
         })}
       </View>
 
-      <Pressable style={elements.glassTabSideAction}>
-        <BlurView
-          intensity={colors.glassTab.blurSideIntensity}
-          tint={colors.glassTab.blurTint}
-          experimentalBlurMethod="dimezisBlurView"
-          reducedTransparencyFallbackColor="rgba(10,12,16,0.58)"
-          style={elements.glassTabSideActionBlur}
-        />
-        <View pointerEvents="none" style={elements.glassTabSideActionInnerBorder} />
-        <Coffee size={20} strokeWidth={2.1} color={SIDE_ICON_COLOR} />
-      </Pressable>
+      {!sideActionConfig.hidden && (
+        <Pressable
+          style={elements.glassTabSideAction}
+          onPress={onSideActionPress}
+          disabled={sideActionConfig.disabled}
+        >
+          <BlurView
+            intensity={colors.glassTab.blurSideIntensity}
+            tint={colors.glassTab.blurTint}
+            experimentalBlurMethod="dimezisBlurView"
+            reducedTransparencyFallbackColor="rgba(10,12,16,0.58)"
+            style={elements.glassTabSideActionBlur}
+          />
+          <View pointerEvents="none" style={elements.glassTabSideActionInnerBorder} />
+          <SideActionIcon
+            size={sideActionIconSize}
+            strokeWidth={sideActionIconStrokeWidth}
+            color={sideActionIconColor}
+          />
+        </Pressable>
+      )}
     </View>
   );
 }

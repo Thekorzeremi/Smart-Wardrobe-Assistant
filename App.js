@@ -21,6 +21,8 @@ import { Login } from "./screens/Login";
 import { Profile } from "./screens/Profile";
 import { ProfileUpdate } from "./screens/ProfileUpdate";
 import { Register } from "./screens/Register";
+import { Coffee, Plus, RotateCw } from "lucide-react-native";
+import { StatusBar } from "expo-status-bar";
 import { ResetPassword } from "./screens/ResetPassword";
 import { Wardrobe } from "./screens/Wardrobe";
 import { supabase } from "./services/supabase";
@@ -48,10 +50,47 @@ function AuthStack() {
 }
 
 function AppTabs() {
+  const getSideActionConfig = ({ routeName, navigation }) => {
+    if (routeName === "Accueil") {
+      return {
+        Icon: RotateCw,
+        onPress: () => {},
+      };
+    }
+
+    if (routeName === "Armoire") {
+      return {
+        Icon: Plus,
+        onPress: () => {
+          navigation.navigate("Armoire", { openAddModal: true });
+          return false;
+        },
+      };
+    }
+
+    if (routeName === "Profil") {
+      return {
+        Icon: Coffee,
+        onPress: () => {
+          alert("Prendre un café", "Fonctionnalité à venir", [
+            { text: "Annuler", style: "cancel" },
+            { text: "OK", onPress: () => alert("Café pris ! Fonctionnalité à venir") },
+          ]);
+        },
+      };
+    }
+
+    return {
+      Icon: Coffee,
+    };
+  };
+
   return (
     <Tab.Navigator
       initialRouteName="Accueil"
-      tabBar={(props) => <GlassTabBar {...props} />}
+      tabBar={(props) => (
+        <GlassTabBar {...props} getSideActionConfig={getSideActionConfig} />
+      )}
       screenOptions={{
         headerShown: false,
         sceneStyle: { backgroundColor: "#05070f" },
@@ -131,6 +170,7 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <SafeAreaProvider>
         <AuthProvider>
+          <StatusBar style="light" />
           <DeepLinkHandler />
           <NavigationContainer ref={navigationRef}>
             <RootNavigator />

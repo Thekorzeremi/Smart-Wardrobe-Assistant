@@ -1,11 +1,4 @@
-import {
-  CloudRain,
-  Droplet,
-  Eye,
-  Sun,
-  Thermometer,
-  Wind,
-} from "lucide-react-native";
+import { CloudRain, Droplet, Eye, Sun, Thermometer, Wind } from "lucide-react-native";
 import { useState } from "react";
 import { Dimensions, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useWeather } from "../hooks/useWeather";

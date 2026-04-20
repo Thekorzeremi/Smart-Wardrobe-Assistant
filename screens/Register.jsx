@@ -1,14 +1,14 @@
+import FrostedCard from "../components/FrostedCard";
+import { Layout } from "../components/Layout";
 import { useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
+  View,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
-import FrostedCard from "../components/FrostedCard";
-import { Layout } from "../components/Layout";
 import { useAuth } from "../contexts/AuthContext";
 import { authStyles } from "../theme";
 
@@ -24,10 +24,7 @@ export const Register = ({ navigation }) => {
       return;
     }
     if (password.length < 6) {
-      Alert.alert(
-        "Erreur",
-        "Le mot de passe doit contenir au moins 6 caractères",
-      );
+      Alert.alert("Erreur", "Le mot de passe doit contenir au moins 6 caractères");
       return;
     }
     setLoading(true);
