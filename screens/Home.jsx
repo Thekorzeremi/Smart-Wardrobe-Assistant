@@ -1,64 +1,41 @@
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import { ScrollView, Text, View, ActivityIndicator } from "react-native";
+import { HomeHeader } from "../components/HomeHeader";
+import { WeatherCarousel } from "../components/WeatherCarousel";
+import { colors, elements } from "../theme";
+import {useAuth} from "../contexts/AuthContext";
+import { SuggestionSection } from "../components/SuggestionSection";
 
 export const Home = () => {
+  const { userData, loading: authLoading } = useAuth();
+  const username = userData?.username || "Utilisateur";
+
+  if (authLoading) {
+    return (
+        <View style={[elements.homeBackground, { justifyContent: 'center' }]}>
+          <ActivityIndicator size="large" color={colors.primary} />
+        </View>
+    );
+  }
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.hello}>Bonjour, Remi</Text>
-      <Text style={styles.title}>Accueil Smart Wardrobe</Text>
-
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Suggestion du jour</Text>
-        <Text style={styles.cardText}>
-          Il fait doux aujourd'hui. Pense a une tenue legere avec une veste fine.
-        </Text>
-      </View>
-
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Prochaine etape</Text>
-        <Text style={styles.cardText}>
-          Va dans l'onglet Armoire pour afficher ta garde-robe, ou Profil pour modifier
-          ton compte.
-        </Text>
-      </View>
-    </ScrollView>
+    <LinearGradient
+      colors={[colors.backgroundHomeLinearFrom, colors.backgroundHomeLinearTo]}
+      start={{ x: 0, y: 0.1 }}
+      style={elements.homeBackground}
+    >
+      <ScrollView contentContainerStyle={elements.homeContainer}>
+        <HomeHeader username={username}/>
+        <WeatherCarousel />
+        <SuggestionSection />
+        
+        <View style={elements.homeCard}>
+          <Text style={elements.homeCardTitle}>Prochaine etape</Text>
+          <Text style={elements.homeCardText}>
+            Va dans l'onglet Armoire pour afficher ta garde-robe, ou Profil pour
+            modifier ton compte.
+          </Text>
+        </View>
+      </ScrollView>
+    </LinearGradient>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    backgroundColor: "#05070f",
-    paddingHorizontal: 20,
-    paddingTop: 76,
-    paddingBottom: 110,
-    gap: 14,
-  },
-  hello: {
-    color: "#b4c0ff",
-    fontSize: 15,
-  },
-  title: {
-    color: "#f3f5ff",
-    fontSize: 32,
-    fontWeight: "700",
-    marginBottom: 12,
-  },
-  card: {
-    backgroundColor: "rgba(120, 142, 255, 0.14)",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.14)",
-    borderRadius: 20,
-    padding: 16,
-    gap: 8,
-  },
-  cardTitle: {
-    color: "#eef1ff",
-    fontSize: 18,
-    fontWeight: "600",
-  },
-  cardText: {
-    color: "rgba(238,241,255,0.88)",
-    fontSize: 15,
-    lineHeight: 22,
-  },
-});

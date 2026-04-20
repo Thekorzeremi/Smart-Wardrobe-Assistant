@@ -1,75 +1,45 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View , TouchableOpacity, Alert } from "react-native";
+import { useAuth } from "../contexts/AuthContext";
+import { profileStyles } from "../theme";
+import { Avatar } from "../components/Avatar";
 
-export const Profile = () => {
+export const Profile = ({navigation}) => {
+  const { user, userData, signOut, updateProfile } = useAuth();
+  
+  const username = userData?.username || user?.email?.split('@')[0] || "Utilisateur";
+  const email = user?.email || "";
+  const location = [userData?.city, userData?.country].filter(Boolean).join(', ');
+
+  const handleLogout = () => {
+    Alert.alert("Déconnexion", "Voulez-vous vraiment vous déconnecter ?", [
+      { text: "Annuler", style: "cancel" },
+      { text: "OK", onPress: async () => {
+        try {
+            await signOut();
+          } catch (error) {
+            Alert.alert("Erreur", error.message);
+          }
+      } },
+    ]);
+  };
   return (
-    <View style={styles.container}>
-      <View style={styles.avatar}>
-        <Text style={styles.avatarText}>R</Text>
+    <View style={profileStyles.container}>
+      <Avatar seed={username} size={104} />
+      <Text style={profileStyles.name}>{username}</Text>
+      <Text style={profileStyles.email}>{email}</Text>
+      {location ? <Text style={profileStyles.city}>{location}</Text> : null}
+      <View style={profileStyles.menu}>
+        <TouchableOpacity onPress={() => navigation.navigate("ProfileUpdate")}>
+          <Text style={profileStyles.menuItem}>Modifier le profil</Text>
+        </TouchableOpacity>
+        {/* <TouchableOpacity onPress={() => Alert.alert("Notifications", "Fonctionnalité à venir")}>
+          <Text style={profileStyles.menuItem}>Notifications</Text>
+        </TouchableOpacity> */}
+        <TouchableOpacity onPress={handleLogout}>
+          <Text style={profileStyles.logout}>Déconnexion</Text>
+        </TouchableOpacity>
       </View>
-      <Text style={styles.name}>Remi</Text>
-      <Text style={styles.city}>Berlin, Germany</Text>
-
-      <View style={styles.menu}>
-        <Text style={styles.menuItem}>Modifier le profil</Text>
-        <Text style={styles.menuItem}>Notifications</Text>
-        <Text style={styles.logout}>Deconnexion</Text>
-      </View>
+      
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#05070f",
-    alignItems: "center",
-    paddingTop: 92,
-    paddingHorizontal: 20,
-    paddingBottom: 110,
-  },
-  avatar: {
-    width: 104,
-    height: 104,
-    borderRadius: 52,
-    backgroundColor: "rgba(255,255,255,0.2)",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 18,
-  },
-  avatarText: {
-    color: "#f3f5ff",
-    fontSize: 38,
-    fontWeight: "700",
-  },
-  name: {
-    color: "#f3f5ff",
-    fontSize: 35,
-    fontWeight: "700",
-  },
-  city: {
-    color: "rgba(243,245,255,0.72)",
-    fontSize: 20,
-    marginTop: 4,
-  },
-  menu: {
-    width: "100%",
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.14)",
-    backgroundColor: "rgba(132, 137, 255, 0.14)",
-    marginTop: 28,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    gap: 14,
-  },
-  menuItem: {
-    color: "#f3f5ff",
-    fontSize: 20,
-    fontWeight: "500",
-  },
-  logout: {
-    color: "#ff5f69",
-    fontSize: 20,
-    fontWeight: "600",
-  },
-});

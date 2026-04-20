@@ -1,0 +1,636 @@
+import { StyleSheet } from "react-native";
+
+export const colors = {
+  backgroundHomeLinearFrom: "#004689",
+  backgroundHomeLinearTo: "#002863",
+  backgroundOtherLinearFrom: "#3F3F47",
+  backgroundOtherLinearTo: "#070709",
+  cardHome: {
+    backgroundColor: "#788eff24",
+    borderColor: "#ffffff24",
+  },
+  cardWardrobe: {
+    backgroundColor: "#151A31",
+    borderColor: "#363A4E",
+  },
+  textTitle: "#FFFFFF",
+  textSubtitle: "#B4C0FF",
+  text: "#FFFFFF",
+  glassTab: {
+    mainPillBorderOuter: "rgba(255,255,255,0.14)",
+    mainPillBorderInner: "rgba(255,255,255,0.08)",
+    mainPillBackground: "rgba(10,12,16,0.28)",
+    shadow: "rgba(0,0,0,0.44)",
+    shine: "transparent",
+    activeBackground: "rgba(255, 255, 255, 0.11)",
+    activeBorder: "rgba(255,255,255,0.32)",
+    activeShadow: "rgba(0,0,0,0.26)",
+    label: "rgba(255,255,255,0.78)",
+    labelActive: "#ff496a",
+    iconActive: "#ff496a",
+    iconInactive: "rgba(255,255,255,0.80)",
+    sideIcon: "rgba(255,255,255,0.90)",
+    sideOrbBackground: "rgba(10,12,16,0.28)",
+    sideOrbBorderOuter: "rgba(255,255,255,0.14)",
+    sideOrbBorderInner: "rgba(255,255,255,0.08)",
+    sideOrbGlow: "transparent",
+    blurMainIntensity: 24,
+    blurSideIntensity: 24,
+    blurTint: "transparent",
+  },
+  button: { backgroundColor: "#788eff24", borderColor: "#ffffff24" },
+};
+
+export const text = StyleSheet.create({
+  title: {
+    fontFamily: "SFProDisplay-Bold",
+    fontSize: 24,
+    fontWeight: "700",
+  },
+  subtitle: {
+    fontFamily: "SFProDisplay-Regular",
+    fontSize: 18,
+    fontWeight: "400",
+  },
+  textMedium: {
+    fontFamily: "SFProDisplay-Regular",
+    fontSize: 16,
+    fontWeight: "500",
+  },
+  textSmall: {
+    fontFamily: "SFProDisplay-Regular",
+    fontSize: 14,
+    fontWeight: "400",
+  },
+});
+
+export const glassTabMotion = {
+  pillInset: 5,
+  activeBubbleHorizontalInset: 4,
+  activeBubbleVerticalInset: 3,
+  activeBubbleFullHeightScale: 1.36,
+};
+
+export const size = StyleSheet.create({
+  sm: { padding: 6 },
+  md: { padding: 12 },
+  lg: { padding: 16 },
+});
+
+export const authStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  title: {
+    fontSize: 34,
+    fontWeight: "700",
+    color: "#f3f5ff",
+    marginBottom: 8,
+    textAlign: "center",
+  },
+  subtitle: {
+    fontSize: 16,
+    color: "rgba(243,245,255,0.7)",
+    marginBottom: 32,
+    textAlign: "center",
+  },
+  input: {
+    width: "100%",
+    backgroundColor: "rgba(255,255,255,0.1)",
+    borderRadius: 14,
+    padding: 14,
+    marginVertical: 8,
+    color: "#f3f5ff",
+    fontSize: 16,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.2)",
+  },
+  button: {
+    width: "100%",
+    backgroundColor: "#788eff",
+    borderRadius: 14,
+    padding: 14,
+    alignItems: "center",
+    marginTop: 16,
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "600",
+  },
+  link: {
+    color: "#788eff",
+    textAlign: "center",
+    marginTop: 24,
+    fontSize: 16,
+  },
+});
+
+export const profileStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#05070f",
+    alignItems: "center",
+    paddingTop: 92,
+    paddingHorizontal: 20,
+    paddingBottom: 110,
+  },
+  avatar: {
+    width: 104,
+    height: 104,
+    borderRadius: 52,
+    backgroundColor: "rgba(255,255,255,0.2)",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 18,
+  },
+  avatarImage: {
+    width: 104,
+    height: 104,
+    borderRadius: 52,
+    marginBottom: 18,
+  },
+  avatarText: {
+    color: "#f3f5ff",
+    fontSize: 38,
+    fontWeight: "700",
+  },
+  name: {
+    color: "#f3f5ff",
+    fontSize: 35,
+    fontWeight: "700",
+  },
+  email: {
+    color: "rgba(243,245,255,0.9)",
+    fontSize: 18,
+    marginTop: 2,
+  },
+  city: {
+    color: "rgba(243,245,255,0.72)",
+    fontSize: 20,
+    marginTop: 4,
+  },
+  menu: {
+    width: "100%",
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.14)",
+    backgroundColor: "rgba(132, 137, 255, 0.14)",
+    marginTop: 28,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    gap: 14,
+  },
+  menuItem: {
+    color: "#f3f5ff",
+    fontSize: 20,
+    fontWeight: "500",
+  },
+  logout: {
+    color: "#ff5f69",
+    fontSize: 20,
+    fontWeight: "600",
+  },
+});
+
+export const avatarContainerStyle = (dimension) => ({
+  width: dimension,
+  height: dimension,
+  borderRadius: dimension / 2,
+  overflow: "hidden",
+  backgroundColor: "rgba(255,255,255,0.2)",
+  alignItems: "center",
+  justifyContent: "center",
+});
+
+export const weatherSlideStyle = (windowWidth) => ({
+  width: windowWidth - 32,
+});
+
+export const weatherDetailsSlideStyle = (windowWidth) => ({
+  width: windowWidth - 32,
+  justifyContent: "space-between",
+});
+
+export const elements = StyleSheet.create({
+  gestureRoot: {
+    flex: 1,
+  },
+  card: {
+    backgroundColor: colors.cardHome.backgroundColor,
+    borderColor: colors.cardHome.borderColor,
+    borderRadius: 10,
+  },
+  title: {
+    color: colors.textTitle,
+    ...text.title,
+  },
+  subtitle: {
+    color: colors.textSubtitle,
+    ...text.subtitle,
+  },
+  textSmall: {
+    color: colors.text,
+    ...text.textSmall,
+  },
+  textMedium: {
+    color: colors.text,
+    ...text.textMedium,
+  },
+  glassTabMainPill: {
+    flex: 1,
+    position: "relative",
+    flexDirection: "row",
+    borderRadius: 32,
+    borderWidth: 0.8,
+    overflow: "hidden",
+    padding: 5,
+    borderColor: colors.glassTab.mainPillBorderOuter,
+    backgroundColor: colors.glassTab.mainPillBackground,
+    shadowColor: colors.glassTab.shadow,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 1,
+    shadowRadius: 20,
+    elevation: 8,
+  },
+  glassTabBlur: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  glassTabInnerBorder: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 32,
+    borderWidth: 0.6,
+    borderColor: colors.glassTab.mainPillBorderInner,
+  },
+  glassTabShine: {
+    position: "absolute",
+    top: 2,
+    left: 14,
+    right: 14,
+    height: "40%",
+    backgroundColor: colors.glassTab.shine,
+    borderBottomLeftRadius: 56,
+    borderBottomRightRadius: 56,
+  },
+  glassTabItem: {
+    flex: 1,
+    borderRadius: 26,
+    minHeight: 50,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 3,
+  },
+  glassTabActive: {
+    borderWidth: 0.8,
+    backgroundColor: colors.glassTab.activeBackground,
+    borderColor: colors.glassTab.activeBorder,
+    shadowColor: colors.glassTab.activeShadow,
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 1,
+    shadowRadius: 9,
+    elevation: 4,
+  },
+  glassTabLabel: {
+    fontSize: 13,
+    fontWeight: "500",
+    color: colors.glassTab.label,
+  },
+  glassTabLabelActive: {
+    fontWeight: "600",
+    color: colors.glassTab.labelActive,
+  },
+  glassTabSideAction: {
+    width: 62,
+    height: 62,
+    borderRadius: 31,
+    borderWidth: 0.8,
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
+    borderColor: colors.glassTab.sideOrbBorderOuter,
+    backgroundColor: colors.glassTab.sideOrbBackground,
+    shadowColor: colors.glassTab.shadow,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 1,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  glassTabSideActionBlur: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  glassTabSideActionInnerBorder: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 31,
+    borderWidth: 0.6,
+    borderColor: colors.glassTab.sideOrbBorderInner,
+  },
+  glassTabSideActionGlow: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 26,
+    backgroundColor: "transparent",
+    shadowColor: colors.glassTab.sideOrbGlow,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 1,
+    shadowRadius: 10,
+  },
+  glassTabSideActionShine: {
+    position: "absolute",
+    top: 2,
+    left: 8,
+    right: 8,
+    height: "40%",
+    backgroundColor: colors.glassTab.shine,
+    borderBottomLeftRadius: 40,
+    borderBottomRightRadius: 40,
+  },
+  glassTabIconActive: {
+    color: colors.glassTab.iconActive,
+  },
+  glassTabIconInactive: {
+    color: colors.glassTab.iconInactive,
+  },
+  glassTabWrapper: {
+    left: 14,
+    right: 14,
+    position: "absolute",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  glassTabActiveBubbleBase: {
+    position: "absolute",
+    left: glassTabMotion.pillInset + glassTabMotion.activeBubbleHorizontalInset,
+    top: glassTabMotion.pillInset + glassTabMotion.activeBubbleVerticalInset,
+    bottom: glassTabMotion.pillInset + glassTabMotion.activeBubbleVerticalInset,
+    borderRadius: 24,
+    zIndex: 0,
+  },
+  glassTabTabLayer: {
+    zIndex: 1,
+  },
+  layoutContainer: {
+    backgroundColor: "black",
+    flex: 1,
+    paddingVertical: 80,
+    paddingHorizontal: 16,
+  },
+  layoutTitle: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 24,
+    textAlign: "center",
+  },
+  frostedCardBackground: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  frostedCard: {
+    width: 300,
+    padding: 20,
+    borderRadius: 20,
+    alignItems: "center",
+    backgroundColor: "rgba(255,255,255,0.1)",
+  },
+  frostedCardTitle: {
+    fontSize: 22,
+    fontWeight: "600",
+    color: "#fff",
+  },
+  frostedCardText: {
+    fontSize: 16,
+    color: "#f2f2f2",
+  },
+  homeBackground: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    flex: 1,
+  },
+  homeContainer: {
+    flexGrow: 1,
+    paddingHorizontal: 16,
+    paddingTop: 76,
+    paddingBottom: 110,
+    gap: 14,
+  },
+  homeCard: {
+    backgroundColor: "rgba(120, 142, 255, 0.14)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.14)",
+    borderRadius: 20,
+    padding: 16,
+    gap: 8,
+  },
+  homeCardTitle: {
+    color: "#eef1ff",
+    fontSize: 18,
+    fontWeight: "600",
+  },
+  homeCardText: {
+    color: "rgba(238,241,255,0.88)",
+    fontSize: 15,
+    lineHeight: 22,
+  },
+  homeHeaderHello: {
+    color: "#b4c0ff",
+    fontSize: 16,
+  },
+  homeHeaderRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 12,
+    justifyContent: "space-between",
+  },
+  homeHeaderLeft: {
+    gap: 4,
+  },
+  homeHeaderTitle: {
+    color: "#f3f5ff",
+    fontSize: 32,
+    fontWeight: "600",
+  },
+  homeHeaderDate: {
+    color: "#f3f5ff",
+    fontSize: 20,
+    fontWeight: "300",
+  },
+  weatherSlide: {
+    justifyContent: "center",
+    alignItems: "center",
+    display: "flex",
+    flexDirection: "row",
+    borderRadius: 20,
+    padding: 16,
+    gap: 8,
+    height: 180,
+    flexWrap: "wrap",
+  },
+  weatherMainCenter: {
+    alignItems: "center",
+  },
+  weatherSlideWidth: {
+    width: "100%",
+  },
+  weatherCity: {
+    fontSize: 20,
+    lineHeight: 20,
+    fontWeight: "bold",
+    color: "white",
+  },
+  weatherTemp: {
+    fontSize: 80,
+    lineHeight: 80,
+    fontWeight: "bold",
+    color: "white",
+  },
+  weatherEmoji: {
+    fontSize: 140,
+    lineHeight: 140,
+  },
+  weatherCondition: {
+    fontSize: 16,
+    color: "#ddd",
+  },
+  weatherDetailsContainer: {
+    alignItems: "center",
+    width: "30%",
+  },
+  weatherDetailTitle: {
+    opacity: 0.5,
+    color: "white",
+  },
+  weatherDetail: {
+    fontSize: 16,
+    color: "#fff",
+    fontWeight: "500",
+  },
+  weatherDetailIcon: {
+    marginBottom: 6,
+  },
+  weatherPagination: {
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: 6,
+    marginTop: 8,
+  },
+  weatherDot: {
+    height: 6,
+    borderRadius: 3,
+  },
+  weatherDotActive: {
+    width: 16,
+    backgroundColor: "white",
+  },
+  weatherDotInactive: {
+    width: 6,
+    backgroundColor: "rgba(255,255,255,0.4)",
+  },
+  wardrobeContainer: {
+    flexGrow: 1,
+    backgroundColor: "#05070f",
+    paddingHorizontal: 16,
+  },
+  wardrobeTitle: {
+    color: "#f3f5ff",
+    fontSize: 32,
+    fontWeight: "700",
+    marginBottom: 16,
+  },
+  wardrobeGrid: {
+    gap: 12,
+    flex: 1,
+  },
+  wardrobeGridItem: {
+    gap: 12,
+    flex: 1,
+  },
+  wardrobeItemCard: {
+    width: "48%",
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.14)",
+    backgroundColor: "rgba(255,255,255,0.08)",
+    padding: 10,
+    marginBottom: 12,
+  },
+  wardrobeImagePlaceholder: {
+    height: 100,
+    borderRadius: 12,
+    backgroundColor: "rgba(255,255,255,0.13)",
+    marginBottom: 10,
+    overflow: "hidden",
+  },
+  wardrobeItemImage: {
+    width: "100%",
+    height: "100%",
+  },
+  wardrobeItemTitle: {
+    color: "#eef1ff",
+    fontSize: 15,
+    fontWeight: "500",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  profileUpdateAvatarWrapper: {
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  buttonPrimary: {
+    backgroundColor: "#F5A800",
+    padding: 12,
+    borderRadius: 14,
+  },
+  buttonIcon: {
+    backgroundColor: "rgba(255,255,255,0.14)",
+    borderRadius: 14,
+    height: 44,
+    width: 44,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  buttonGhost: {
+    backgroundColor: "transparent",
+    padding: 12,
+    borderRadius: 14,
+  },
+  buttonDanger: {
+    backgroundColor: "rgba(255,0,0,0.3)",
+    padding: 12,
+    borderRadius: 14,
+  },
+  imagePlaceholder:{
+    height: 100,
+    borderRadius: 12,
+    backgroundColor: "rgba(255,255,255,0.13)",
+    marginBottom: 10,
+    overflow: "hidden"
+  },
+  itemCard: {
+    borderRadius: 18,
+    borderWidth: 1,
+    padding: 10,
+    marginBottom: 12,
+  },
+  itemTitle: {
+    color: "#eef1ff",
+    fontSize: 15,
+    fontWeight: "500",
+  },
+  homeGrid : { 
+    flexDirection: 'row', 
+    flexWrap: 'wrap', 
+    marginTop: 10 
+  },
+  homeGridItem: {
+    width: '48%',
+    padding: 4,
+  },
+});
