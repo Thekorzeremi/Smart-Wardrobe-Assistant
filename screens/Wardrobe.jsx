@@ -11,61 +11,41 @@ import {
   Modal,
   Pressable,
   ScrollView,
-  TextInput,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { elements } from "../theme";
 import { useRefreshOnFocus } from "../hooks/use-refresh-on-focus";
-import { useGetClothesQuery } from "../services/wardrobe-service";
+import { useDeleteClothesMutation, useGetClothesQuery } from "../services/wardrobe-service";
 import { useEffect, useRef, useState } from "react";
 import { Pencil, X } from "lucide-react-native";
-import * as ImagePicker from "expo-image-picker";
-
-import { supabase } from "../services/supabase";
+import { WardrobeEditModalContent } from "../components/WardrobeEditModalContent";
+import { WardrobeCreateModalContent } from "../components/WardrobeCreateModalContent";
 import { useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "../contexts/AuthContext";
 
-const emptyAddForm = {
-  name: "",
-  type: "",
-  color: "",
-  style: "",
-  temperature_min: "",
-  temperature_max: "",
-  image_url: "",
-  is_waterproof: false,
-};
 export const Wardrobe = () => {
   useRefreshOnFocus();
   const navigation = useNavigation();
   const route = useRoute();
   const queryClient = useQueryClient();
+	const { data: userData, user } = useAuth();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedClothing, setSelectedClothing] = useState(null);
-  const [editedClothing, setEditedClothing] = useState({});
-  const [newClothing, setNewClothing] = useState(emptyAddForm);
   const [isSavingEdit, setIsSavingEdit] = useState(false);
   const [isCreatingClothing, setIsCreatingClothing] = useState(false);
+  const [isDeletingClothing, setIsDeletingClothing] = useState(false);
   const editTranslateY = useRef(new Animated.Value(42)).current;
   const editOpacity = useRef(new Animated.Value(0)).current;
   const addTranslateY = useRef(new Animated.Value(48)).current;
   const addOpacity = useRef(new Animated.Value(0)).current;
   const isEditAnimatingRef = useRef(false);
   const isAddAnimatingRef = useRef(false);
-  const saveTimerRef = useRef(null);
-
-  useEffect(
-    () => () => {
-      if (saveTimerRef.current) {
-        clearTimeout(saveTimerRef.current);
-      }
-    },
-    [],
-  );
+  const { mutateAsync: deleteClothes } = useDeleteClothesMutation();
 
   useEffect(() => {
     if (route.params?.openAddModal) {
@@ -74,7 +54,7 @@ export const Wardrobe = () => {
     }
   }, [navigation, route.params?.openAddModal]);
 
-  const { data, isLoading, error, refetch } = useGetClothesQuery();
+  const { data, isLoading, error, refetch } = useGetClothesQuery(user?.id);
 
   const openClothingModal = (item) => {
     setSelectedClothing(item);
@@ -83,16 +63,11 @@ export const Wardrobe = () => {
   };
 
   const closeClothingModal = () => {
-    if (saveTimerRef.current) {
-      clearTimeout(saveTimerRef.current);
-      saveTimerRef.current = null;
-    }
-
     setIsModalOpen(false);
     setIsEditModalOpen(false);
     setIsSavingEdit(false);
+    setIsDeletingClothing(false);
     setSelectedClothing(null);
-    setEditedClothing({});
   };
 
   const openAddModal = () => {
@@ -100,7 +75,6 @@ export const Wardrobe = () => {
       return;
     }
 
-    setNewClothing(emptyAddForm);
     setIsAddModalOpen(true);
     addTranslateY.setValue(48);
     addOpacity.setValue(0);
@@ -157,53 +131,7 @@ export const Wardrobe = () => {
       return;
     }
 
-    animateAddClose(() => setNewClothing(emptyAddForm));
-  };
-
-  const setPickedImage = (uri) => {
-    if (!uri) {
-      return;
-    }
-
-    setNewClothing((current) => ({
-      ...current,
-      image_url: uri,
-    }));
-  };
-
-  const openImageLibrary = async () => {
-    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!permission.granted) {
-      Alert.alert("Photo", "L'accès à la galerie est nécessaire.");
-      return;
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      quality: 0.85,
-    });
-
-    if (!result.canceled && result.assets?.[0]?.uri) {
-      setPickedImage(result.assets[0].uri);
-    }
-  };
-
-  const openCamera = async () => {
-    const permission = await ImagePicker.requestCameraPermissionsAsync();
-    if (!permission.granted) {
-      Alert.alert("Photo", "L'accès à la caméra est nécessaire.");
-      return;
-    }
-
-    const result = await ImagePicker.launchCameraAsync({
-      allowsEditing: true,
-      quality: 0.85,
-    });
-
-    if (!result.canceled && result.assets?.[0]?.uri) {
-      setPickedImage(result.assets[0].uri);
-    }
+    animateAddClose();
   };
 
   const getImageUri = (item) => {
@@ -237,27 +165,11 @@ export const Wardrobe = () => {
       ].includes(key),
   );
 
-  const editableInfoEntries = Object.entries(editedClothing ?? {}).filter(
-    ([key]) =>
-      ![
-        "id",
-        "_id",
-        "image_url",
-        "imageUrl",
-        "photo_url",
-        "photoUrl",
-        "image",
-        "url",
-        "user_id",
-      ].includes(key),
-  );
-
   const handleEditPress = () => {
     if (isEditAnimatingRef.current || isSavingEdit) {
       return;
     }
 
-    setEditedClothing(selectedClothing ?? {});
     setIsEditModalOpen(true);
     editTranslateY.setValue(68);
     editOpacity.setValue(0);
@@ -279,59 +191,6 @@ export const Wardrobe = () => {
     ]).start(() => {
       isEditAnimatingRef.current = false;
     });
-  };
-
-  const handleEditFieldChange = (key, newValue) => {
-    setEditedClothing((current) => ({
-      ...current,
-      [key]: newValue,
-    }));
-  };
-
-  const setEditedPickedImage = (uri) => {
-    if (!uri) {
-      return;
-    }
-
-    setEditedClothing((current) => ({
-      ...current,
-      image_url: uri,
-    }));
-  };
-
-  const openEditImageLibrary = async () => {
-    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!permission.granted) {
-      Alert.alert("Photo", "L'accès à la galerie est nécessaire.");
-      return;
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      quality: 0.85,
-    });
-
-    if (!result.canceled && result.assets?.[0]?.uri) {
-      setEditedPickedImage(result.assets[0].uri);
-    }
-  };
-
-  const openEditCamera = async () => {
-    const permission = await ImagePicker.requestCameraPermissionsAsync();
-    if (!permission.granted) {
-      Alert.alert("Photo", "L'accès à la caméra est nécessaire.");
-      return;
-    }
-
-    const result = await ImagePicker.launchCameraAsync({
-      allowsEditing: true,
-      quality: 0.85,
-    });
-
-    if (!result.canceled && result.assets?.[0]?.uri) {
-      setEditedPickedImage(result.assets[0].uri);
-    }
   };
 
   const animateEditClose = (onFinished) => {
@@ -362,31 +221,7 @@ export const Wardrobe = () => {
     });
   };
 
-  const handleSaveEditPress = () => {
-    if (isSavingEdit || isEditAnimatingRef.current) {
-      return;
-    }
-
-    setIsSavingEdit(true);
-    saveTimerRef.current = setTimeout(() => {
-      setSelectedClothing((current) => ({
-        ...(current ?? {}),
-        ...(editedClothing ?? {}),
-      }));
-
-      animateEditClose(() => {
-        setIsSavingEdit(false);
-        Alert.alert("Modifier", "Modifications enregistrées localement.");
-      });
-    }, 1500);
-  };
-
   const closeEditModal = () => {
-    if (saveTimerRef.current) {
-      clearTimeout(saveTimerRef.current);
-      saveTimerRef.current = null;
-    }
-
     setIsSavingEdit(false);
     animateEditClose();
   };
@@ -406,6 +241,16 @@ export const Wardrobe = () => {
   };
 
   const handleDeletePress = () => {
+    if (isDeletingClothing) {
+      return;
+    }
+
+    const selectedId = selectedClothing?.id ?? selectedClothing?._id;
+    if (!selectedId) {
+      Alert.alert("Supprimer", "Impossible de trouver l'identifiant du vêtement.");
+      return;
+    }
+
     Alert.alert(
       "Supprimer ce vêtement ?",
       "Cette action est irréversible.",
@@ -417,8 +262,21 @@ export const Wardrobe = () => {
         {
           text: "Supprimer",
           style: "destructive",
-          onPress: () => {
-            Alert.alert("Supprimer", "Fonctionnalité de suppression à venir.");
+          onPress: async () => {
+            try {
+              setIsDeletingClothing(true);
+              await deleteClothes({ clothingId: selectedId, userId: user?.id });
+              await queryClient.invalidateQueries({ queryKey: ["clothes"] });
+              setIsDeletingClothing(false);
+              closeClothingModal();
+              Alert.alert("Supprimer", "Vêtement supprimé.");
+            } catch (deleteError) {
+              setIsDeletingClothing(false);
+              Alert.alert(
+                "Supprimer",
+                deleteError?.message ?? "Une erreur est survenue.",
+              );
+            }
           },
         },
       ],
@@ -430,64 +288,8 @@ export const Wardrobe = () => {
     closeClothingModal();
   };
 
-  const currentEditPreviewUri =
-    editedClothing.image_url ?? editedClothing.imageUrl ?? getImageUri(selectedClothing);
-
-  const handleAddFieldChange = (key, value) => {
-    setNewClothing((current) => ({
-      ...current,
-      [key]: value,
-    }));
-  };
-
-  const handleCreateClothingPress = async () => {
-    if (isCreatingClothing || isAddAnimatingRef.current) {
-      return;
-    }
-
-    if (!newClothing.name.trim()) {
-      Alert.alert("Ajouter un vêtement", "Le nom est requis.");
-      return;
-    }
-
-    setIsCreatingClothing(true);
-
-    const minTemperatureValue = Number(newClothing.temperature_min);
-    const maxTemperatureValue = Number(newClothing.temperature_max);
-
-    const payload = {
-      name: newClothing.name.trim(),
-      type: newClothing.type.trim() || null,
-      color: newClothing.color.trim() || null,
-      style: newClothing.style.trim() || null,
-      temperature_min: newClothing.temperature_min.trim()
-        ? Number.isNaN(minTemperatureValue)
-          ? null
-          : minTemperatureValue
-        : null,
-      temperature_max: newClothing.temperature_max.trim()
-        ? Number.isNaN(maxTemperatureValue)
-          ? null
-          : maxTemperatureValue
-        : null,
-      image_url: newClothing.image_url.trim() || null,
-      is_waterproof: Boolean(newClothing.is_waterproof),
-    };
-
-    const { error: insertError } = await supabase.from("clothes").insert([payload]);
-
-    if (insertError) {
-      setIsCreatingClothing(false);
-      Alert.alert("Ajouter un vêtement", insertError.message);
-      return;
-    }
-
-    await queryClient.invalidateQueries({ queryKey: ["clothes"] });
-    setIsCreatingClothing(false);
-    animateAddClose(() => {
-      setNewClothing(emptyAddForm);
-    });
-  };
+	console.log("userData", userData);
+	console.log("user", user);
 
   return (
     <SafeAreaView style={elements.wardrobeContainer} edges={["top", "bottom"]}>
@@ -495,6 +297,7 @@ export const Wardrobe = () => {
         style={isModalOpen || isEditModalOpen || isAddModalOpen ? "dark" : "light"}
       />
       <Text style={elements.wardrobeTitle}>Mon Armoire</Text>
+      <Text style={{ color: "red" }}>{JSON.stringify(userData, null, 2)}</Text>
       {isLoading ? <ActivityIndicator size="large" color="#f3f5ff" /> : null}
       {error ? (
         <View>
@@ -563,50 +366,14 @@ export const Wardrobe = () => {
               contentContainerStyle={elements.wardrobeModalBodyContent}
               showsVerticalScrollIndicator={false}
             >
-              <Image
-                resizeMode="cover"
-                source={{ uri: currentEditPreviewUri }}
-                style={elements.wardrobeModalImage}
-              />
-
-              <View style={{ flexDirection: "row", gap: 10 }}>
-                <TouchableOpacity
-                  onPress={openEditImageLibrary}
-                  activeOpacity={0.85}
-                  style={{
-                    flex: 1,
-                    paddingVertical: 12,
-                    borderRadius: 14,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderWidth: 1,
-                    borderColor: "rgba(255,255,255,0.18)",
-                    backgroundColor: "rgba(255,255,255,0.08)",
-                  }}
-                >
-                  <Text style={elements.wardrobeModalActionText}>Choisir une photo</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  onPress={openEditCamera}
-                  activeOpacity={0.85}
-                  style={{
-                    flex: 1,
-                    paddingVertical: 12,
-                    borderRadius: 14,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderWidth: 1,
-                    borderColor: "rgba(255,255,255,0.18)",
-                    backgroundColor: "rgba(255,255,255,0.08)",
-                  }}
-                >
-                  <Text style={elements.wardrobeModalActionText}>Prendre une photo</Text>
-                </TouchableOpacity>
-              </View>
-
               {!isEditModalOpen ? (
                 <>
+                  <Image
+                    resizeMode="cover"
+                    source={{ uri: getImageUri(selectedClothing) }}
+                    style={elements.wardrobeModalImage}
+                  />
+
                   <View style={elements.wardrobeModalInfoList}>
                     {modalInfoEntries.map(([key, value]) => (
                       <View key={key} style={elements.wardrobeModalInfoRow}>
@@ -634,42 +401,17 @@ export const Wardrobe = () => {
                   </TouchableOpacity>
                 </>
               ) : (
-                <Animated.View
-                  style={{
-                    opacity: editOpacity,
-                    transform: [{ translateY: editTranslateY }],
-                  }}
-                >
-                  <View style={elements.wardrobeModalInfoList}>
-                    {editableInfoEntries.map(([key, value]) => (
-                      <View key={key} style={elements.wardrobeModalInfoRow}>
-                        <Text style={elements.wardrobeModalInfoKey}>{key}</Text>
-                        <TextInput
-                          value={value == null ? "" : String(value)}
-                          onChangeText={(text) => handleEditFieldChange(key, text)}
-                          style={elements.wardrobeModalInfoValue}
-                          placeholder="-"
-                          placeholderTextColor="rgba(243,245,255,0.5)"
-                        />
-                      </View>
-                    ))}
-                  </View>
-
-                  <TouchableOpacity
-                    style={[
-                      elements.wardrobeModalBottomDeleteButton,
-                      elements.wardrobeModalActionButton,
-                      saveButtonStyle,
-                    ]}
-                    onPress={handleSaveEditPress}
-                    activeOpacity={0.86}
-                    disabled={isSavingEdit}
-                  >
-                    <Text style={elements.wardrobeModalActionText}>
-                      {isSavingEdit ? "Enregistrement..." : "Enregistrer"}
-                    </Text>
-                  </TouchableOpacity>
-                </Animated.View>
+                <WardrobeEditModalContent
+                  selectedClothing={selectedClothing}
+                  userId={user?.id}
+                  editOpacity={editOpacity}
+                  editTranslateY={editTranslateY}
+                  getImageUri={getImageUri}
+                  onSavingStateChange={setIsSavingEdit}
+                  onUpdatedClothing={setSelectedClothing}
+                  onCloseAfterSave={closeEditModal}
+                  saveButtonStyle={saveButtonStyle}
+                />
               )}
             </ScrollView>
           </View>
@@ -694,214 +436,13 @@ export const Wardrobe = () => {
               },
             ]}
           >
-            <View style={elements.wardrobeModalHeader}>
-              <View style={elements.wardrobeModalHeaderTopRow}>
-                <Text style={elements.wardrobeModalTitle}>Ajouter un vêtement</Text>
-
-                <View style={elements.wardrobeModalActions}>
-                  <TouchableOpacity
-                    style={elements.wardrobeModalIconButton}
-                    onPress={closeAddModal}
-                    activeOpacity={0.82}
-                  >
-                    <X size={19} color="#f3f5ff" />
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-
-            <ScrollView
-              style={elements.wardrobeModalBody}
-              contentContainerStyle={elements.wardrobeModalBodyContent}
-              showsVerticalScrollIndicator={false}
-            >
-              <Image
-                resizeMode="cover"
-                source={{
-                  uri: newClothing.image_url?.trim()
-                    ? newClothing.image_url.trim()
-                    : "https://media1.tenor.com/m/wb_rblUTxVAAAAAd/boat-kid-aura-farming-pacu-jalur.gif",
-                }}
-                style={elements.wardrobeModalImage}
-              />
-
-              <View style={{ flexDirection: "row", gap: 10 }}>
-                <TouchableOpacity
-                  onPress={openImageLibrary}
-                  activeOpacity={0.85}
-                  style={{
-                    flex: 1,
-                    paddingVertical: 12,
-                    borderRadius: 14,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderWidth: 1,
-                    borderColor: "rgba(255,255,255,0.18)",
-                    backgroundColor: "rgba(255,255,255,0.08)",
-                  }}
-                >
-                  <Text style={elements.wardrobeModalActionText}>Choisir une photo</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  onPress={openCamera}
-                  activeOpacity={0.85}
-                  style={{
-                    flex: 1,
-                    paddingVertical: 12,
-                    borderRadius: 14,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderWidth: 1,
-                    borderColor: "rgba(255,255,255,0.18)",
-                    backgroundColor: "rgba(255,255,255,0.08)",
-                  }}
-                >
-                  <Text style={elements.wardrobeModalActionText}>Prendre une photo</Text>
-                </TouchableOpacity>
-              </View>
-
-              <View style={elements.wardrobeModalInfoList}>
-                <View style={elements.wardrobeModalInfoRow}>
-                  <Text style={elements.wardrobeModalInfoKey}>name</Text>
-                  <TextInput
-                    value={newClothing.name}
-                    onChangeText={(text) => handleAddFieldChange("name", text)}
-                    style={elements.wardrobeModalInfoValue}
-                    placeholder="Nom du vêtement"
-                    placeholderTextColor="rgba(243,245,255,0.5)"
-                  />
-                </View>
-
-                <View style={elements.wardrobeModalInfoRow}>
-                  <Text style={elements.wardrobeModalInfoKey}>type</Text>
-                  <TextInput
-                    value={newClothing.type}
-                    onChangeText={(text) => handleAddFieldChange("type", text)}
-                    style={elements.wardrobeModalInfoValue}
-                    placeholder="Pull, pantalon, veste..."
-                    placeholderTextColor="rgba(243,245,255,0.5)"
-                  />
-                </View>
-
-                <View style={elements.wardrobeModalInfoRow}>
-                  <Text style={elements.wardrobeModalInfoKey}>color</Text>
-                  <TextInput
-                    value={newClothing.color}
-                    onChangeText={(text) => handleAddFieldChange("color", text)}
-                    style={elements.wardrobeModalInfoValue}
-                    placeholder="Couleur"
-                    placeholderTextColor="rgba(243,245,255,0.5)"
-                  />
-                </View>
-
-                <View style={elements.wardrobeModalInfoRow}>
-                  <Text style={elements.wardrobeModalInfoKey}>style</Text>
-                  <TextInput
-                    value={newClothing.style}
-                    onChangeText={(text) => handleAddFieldChange("style", text)}
-                    style={elements.wardrobeModalInfoValue}
-                    placeholder="Casual, chic..."
-                    placeholderTextColor="rgba(243,245,255,0.5)"
-                  />
-                </View>
-
-                <View style={{ flexDirection: "row", gap: 10 }}>
-                  <View style={[elements.wardrobeModalInfoRow, { flex: 1 }]}>
-                    <Text style={elements.wardrobeModalInfoKey}>temperature_min</Text>
-                    <TextInput
-                      value={newClothing.temperature_min}
-                      onChangeText={(text) =>
-                        handleAddFieldChange("temperature_min", text)
-                      }
-                      style={elements.wardrobeModalInfoValue}
-                      placeholder="Min"
-                      placeholderTextColor="rgba(243,245,255,0.5)"
-                      keyboardType="numeric"
-                    />
-                  </View>
-
-                  <View style={[elements.wardrobeModalInfoRow, { flex: 1 }]}>
-                    <Text style={elements.wardrobeModalInfoKey}>temperature_max</Text>
-                    <TextInput
-                      value={newClothing.temperature_max}
-                      onChangeText={(text) =>
-                        handleAddFieldChange("temperature_max", text)
-                      }
-                      style={elements.wardrobeModalInfoValue}
-                      placeholder="Max"
-                      placeholderTextColor="rgba(243,245,255,0.5)"
-                      keyboardType="numeric"
-                    />
-                  </View>
-                </View>
-
-                <View style={elements.wardrobeModalInfoRow}>
-                  <Text style={elements.wardrobeModalInfoKey}>image_url</Text>
-                  <TextInput
-                    value={newClothing.image_url}
-                    onChangeText={(text) => handleAddFieldChange("image_url", text)}
-                    style={elements.wardrobeModalInfoValue}
-                    placeholder="Lien de l'image"
-                    placeholderTextColor="rgba(243,245,255,0.5)"
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                  />
-                </View>
-
-                <View style={elements.wardrobeModalInfoRow}>
-                  <Text style={elements.wardrobeModalInfoKey}>is_waterproof</Text>
-                  <TouchableOpacity
-                    onPress={() =>
-                      handleAddFieldChange("is_waterproof", !newClothing.is_waterproof)
-                    }
-                    activeOpacity={0.85}
-                    style={{ flexDirection: "row", alignItems: "center", gap: 10 }}
-                  >
-                    <View
-                      style={{
-                        width: 48,
-                        height: 30,
-                        borderRadius: 15,
-                        padding: 3,
-                        backgroundColor: newClothing.is_waterproof
-                          ? "rgba(10,132,255,0.35)"
-                          : "rgba(255,255,255,0.14)",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <View
-                        style={{
-                          width: 24,
-                          height: 24,
-                          borderRadius: 12,
-                          backgroundColor: "#fff",
-                          transform: [{ translateX: newClothing.is_waterproof ? 18 : 0 }],
-                        }}
-                      />
-                    </View>
-                    <Text style={elements.wardrobeModalInfoValue}>
-                      {newClothing.is_waterproof ? "Oui" : "Non"}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-
-              <TouchableOpacity
-                style={[
-                  elements.wardrobeModalBottomDeleteButton,
-                  elements.wardrobeModalActionButton,
-                  saveButtonStyle,
-                ]}
-                onPress={handleCreateClothingPress}
-                activeOpacity={0.86}
-                disabled={isCreatingClothing}
-              >
-                <Text style={elements.wardrobeModalActionText}>
-                  {isCreatingClothing ? "Création..." : "Créer"}
-                </Text>
-              </TouchableOpacity>
-            </ScrollView>
+            <WardrobeCreateModalContent
+              isVisible={isAddModalOpen}
+              userId={user?.id}
+              onCreatingStateChange={setIsCreatingClothing}
+              saveButtonStyle={saveButtonStyle}
+              onClose={closeAddModal}
+            />
           </Animated.View>
         </View>
       </Modal>
