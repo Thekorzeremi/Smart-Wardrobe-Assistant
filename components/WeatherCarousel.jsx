@@ -129,7 +129,7 @@ export const WeatherCarousel = () => {
   };
 
   return (
-    <View style={{ marginVertical: 8 }}>
+    <View style={{ marginVertical: 8, backgroundColor: "transparent" }}>
       <ScrollView
         horizontal
         pagingEnabled

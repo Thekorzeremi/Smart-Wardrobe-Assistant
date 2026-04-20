@@ -1,7 +1,14 @@
+import { useState } from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import FrostedCard from "../components/FrostedCard";
 import { Layout } from "../components/Layout";
-import { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
 import { useAuth } from "../contexts/AuthContext";
 import { authStyles } from "../theme";
 
@@ -17,14 +24,15 @@ export const Register = ({ navigation }) => {
       return;
     }
     if (password.length < 6) {
-      Alert.alert("Erreur", "Le mot de passe doit contenir au moins 6 caractères");
+      Alert.alert(
+        "Erreur",
+        "Le mot de passe doit contenir au moins 6 caractères",
+      );
       return;
     }
     setLoading(true);
     try {
       await signUp(email, password);
-      Alert.alert("Succès", "Compte créé ! Vous pouvez vous connecter.");
-      navigation.navigate("Login");
     } catch (error) {
       Alert.alert("Erreur", error.message);
     } finally {
@@ -37,7 +45,10 @@ export const Register = ({ navigation }) => {
       <View style={authStyles.container}>
         <FrostedCard>
           <Text style={authStyles.title}>Inscription</Text>
-          <Text style={authStyles.subtitle}> Inscrivez vous et créez votre garde-robe intelligente</Text>
+          <Text style={authStyles.subtitle}>
+            {" "}
+            Inscrivez vous et créez votre garde-robe intelligente
+          </Text>
 
           <TextInput
             style={authStyles.input}
@@ -57,8 +68,16 @@ export const Register = ({ navigation }) => {
             onChangeText={setPassword}
           />
 
-          <TouchableOpacity style={authStyles.button} onPress={handleRegister} disabled={loading}>
-            {loading ? <ActivityIndicator color="#fff" /> : <Text style={authStyles.buttonText}>S'inscrire</Text>}
+          <TouchableOpacity
+            style={authStyles.button}
+            onPress={handleRegister}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={authStyles.buttonText}>S'inscrire</Text>
+            )}
           </TouchableOpacity>
 
           <TouchableOpacity onPress={() => navigation.navigate("Login")}>
