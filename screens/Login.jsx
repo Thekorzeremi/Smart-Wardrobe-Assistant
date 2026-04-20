@@ -1,7 +1,14 @@
+import { useState } from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import FrostedCard from "../components/FrostedCard";
 import { Layout } from "../components/Layout";
-import { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
 import { useAuth } from "../contexts/AuthContext";
 import { authStyles } from "../theme";
 
@@ -50,13 +57,29 @@ export const Login = ({ navigation }) => {
             value={password}
             onChangeText={setPassword}
           />
+          <TouchableOpacity
+            onPress={() => navigation.navigate("ForgotPassword")}
+            style={{}}
+          >
+            <Text style={authStyles.forgotLink}>Mot de passe oublié ?</Text>
+          </TouchableOpacity>
 
-          <TouchableOpacity style={authStyles.button} onPress={handleLogin} disabled={loading}>
-            {loading ? <ActivityIndicator color="#fff" /> : <Text style={authStyles.buttonText}>Se connecter</Text>}
+          <TouchableOpacity
+            style={authStyles.button}
+            onPress={handleLogin}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={authStyles.buttonText}>Se connecter</Text>
+            )}
           </TouchableOpacity>
 
           <TouchableOpacity onPress={() => navigation.navigate("Register")}>
-            <Text style={authStyles.link}>Pas encore de compte ? Créer un compte</Text>
+            <Text style={authStyles.link}>
+              Pas encore de compte ? Créer un compte
+            </Text>
           </TouchableOpacity>
         </FrostedCard>
       </View>

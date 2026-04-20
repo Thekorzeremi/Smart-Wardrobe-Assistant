@@ -113,18 +113,30 @@ export const authStyles = StyleSheet.create({
     borderRadius: 14,
     padding: 14,
     alignItems: "center",
-    marginTop: 16,
+    marginTop: 20,
   },
   buttonText: {
     color: "#fff",
     fontSize: 18,
     fontWeight: "600",
   },
+  forgotLink: {
+    color: "#788eff",
+    textAlign: "center",
+    fontSize: 16,
+    marginVertical: 4,
+  },
   link: {
     color: "#788eff",
     textAlign: "center",
     marginTop: 24,
     fontSize: 16,
+  },
+  error: {
+    color: "#ff5f69",
+    textAlign: "center",
+    marginBottom: 12,
+    fontSize: 14,
   },
 });
 
@@ -135,7 +147,8 @@ export const profileStyles = StyleSheet.create({
     alignItems: "center",
     paddingTop: 92,
     paddingHorizontal: 20,
-    paddingBottom: 110,
+    paddingBottom: 130,
+    justifyContent: "space-between",
   },
   avatar: {
     width: 104,
@@ -183,14 +196,25 @@ export const profileStyles = StyleSheet.create({
     paddingHorizontal: 16,
     gap: 14,
   },
+  menuItemContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    paddingVertical: 8,
+  },
   menuItem: {
     color: "#f3f5ff",
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "500",
+  },
+  menuItemDestructive: {
+    color: "#ff5f69",
+    fontSize: 18,
+    fontWeight: "600",
   },
   logout: {
     color: "#ff5f69",
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "600",
   },
 });
@@ -606,12 +630,12 @@ export const elements = StyleSheet.create({
     padding: 12,
     borderRadius: 14,
   },
-  imagePlaceholder:{
+  imagePlaceholder: {
     height: 100,
     borderRadius: 12,
     backgroundColor: "rgba(255,255,255,0.13)",
     marginBottom: 10,
-    overflow: "hidden"
+    overflow: "hidden",
   },
   itemCard: {
     borderRadius: 18,
@@ -624,13 +648,13 @@ export const elements = StyleSheet.create({
     fontSize: 15,
     fontWeight: "500",
   },
-  homeGrid : { 
-    flexDirection: 'row', 
-    flexWrap: 'wrap', 
-    marginTop: 10 
+  homeGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginTop: 10,
   },
   homeGridItem: {
-    width: '48%',
+    width: "48%",
     padding: 4,
   },
 });

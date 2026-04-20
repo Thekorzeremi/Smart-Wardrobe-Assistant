@@ -1,28 +1,35 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import {
+  createNavigationContainerRef,
+  NavigationContainer,
+} from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { NavigationContainer } from "@react-navigation/native";
+import {
+  focusManager,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
+import * as Linking from "expo-linking";
+import { useEffect } from "react";
+import { AppState, Platform } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { GlassTabBar } from "./components/GlassTabBar";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { ForgotPassword } from "./screens/ForgotPassword";
 import { Home } from "./screens/Home";
-import { Wardrobe } from "./screens/Wardrobe";
-import { ProfileUpdate } from "./screens/ProfileUpdate";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useEffect } from "react";
-import { AppState, Platform } from "react-native";
-import { focusManager } from "@tanstack/react-query";
 import { Login } from "./screens/Login";
 import { Profile } from "./screens/Profile";
+import { ProfileUpdate } from "./screens/ProfileUpdate";
 import { Register } from "./screens/Register";
+import { ResetPassword } from "./screens/ResetPassword";
+import { Wardrobe } from "./screens/Wardrobe";
+import { supabase } from "./services/supabase";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 const queryClient = new QueryClient();
+export const navigationRef = createNavigationContainerRef();
 
-/**
- *
- * @param {AppStateStatus} status
- */
 function onAppStateChange(status) {
   if (Platform.OS !== "web") {
     focusManager.setFocused(status === "active");
@@ -34,9 +41,12 @@ function AuthStack() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="Register" component={Register} />
+      <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+      <Stack.Screen name="ResetPassword" component={ResetPassword} />
     </Stack.Navigator>
   );
 }
+
 function AppTabs() {
   return (
     <Tab.Navigator
@@ -53,6 +63,7 @@ function AppTabs() {
     </Tab.Navigator>
   );
 }
+
 function AppStack() {
   useEffect(() => {
     const subscription = AppState.addEventListener("change", onAppStateChange);
@@ -68,9 +79,51 @@ function AppStack() {
 }
 
 function RootNavigator() {
-  const { user, loading } = useAuth();
+  const { user, loading, isRecovery } = useAuth();
   if (loading) return null;
+  if (isRecovery) {
+    return (
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="ResetPassword" component={ResetPassword} />
+      </Stack.Navigator>
+    );
+  }
+
   return user ? <AppStack /> : <AuthStack />;
+}
+
+function DeepLinkHandler() {
+  const { setIsRecovery } = useAuth();
+
+  useEffect(() => {
+    const handleDeepLink = async (url) => {
+      if (!url || !url.includes("type=recovery")) return;
+
+      console.log("🔗 Recovery URL détectée:", url);
+
+      const params = new URLSearchParams(url.split("#")[1]);
+      const access_token = params.get("access_token");
+      const refresh_token = params.get("refresh_token");
+      const type = params.get("type");
+
+      if (access_token && refresh_token && type === "recovery") {
+        setIsRecovery(true);
+        await supabase.auth.setSession({ access_token, refresh_token });
+      }
+    };
+
+    Linking.getInitialURL().then((url) => {
+      if (url) handleDeepLink(url);
+    });
+
+    const subscription = Linking.addEventListener("url", ({ url }) => {
+      handleDeepLink(url);
+    });
+
+    return () => subscription.remove();
+  }, []);
+
+  return null;
 }
 
 export default function App() {
@@ -78,7 +131,8 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <SafeAreaProvider>
         <AuthProvider>
-          <NavigationContainer>
+          <DeepLinkHandler />
+          <NavigationContainer ref={navigationRef}>
             <RootNavigator />
           </NavigationContainer>
         </AuthProvider>

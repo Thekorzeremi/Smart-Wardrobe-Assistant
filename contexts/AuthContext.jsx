@@ -1,6 +1,6 @@
-import { createContext, useState, useEffect, useContext } from 'react';
-import { supabase } from '../services/supabase';
-import { userService } from '../services/userService';
+import { createContext, useContext, useEffect, useState } from "react";
+import { supabase } from "../services/supabase";
+import { userService } from "../services/userService";
 
 const AuthContext = createContext({});
 
@@ -8,14 +8,19 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
-  
+  const [isRecovery, setIsRecovery] = useState(false);
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       setLoading(false);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("🔐 Auth event:", event);
+
       setUser(session?.user ?? null);
       setLoading(false);
     });
@@ -32,7 +37,10 @@ export const AuthProvider = ({ children }) => {
   }, [user]);
 
   const signIn = async (email, password) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
     if (error) throw error;
   };
 
@@ -40,12 +48,15 @@ export const AuthProvider = ({ children }) => {
     const { data: authData, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { username } }
+      options: { data: { username } },
     });
     if (signUpError) throw signUpError;
-
     if (authData.user) {
-      await userService.upsertUser(authData.user.id, { username, city: '', country: '' });
+      await userService.upsertUser(authData.user.id, {
+        username,
+        city: "",
+        country: "",
+      });
     }
   };
 
@@ -55,14 +66,28 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     setUserData(null);
   };
+
   const updateProfile = async (updates) => {
-    if (!user) throw new Error('Utilisateur non connecté');
+    if (!user) throw new Error("Utilisateur non connecté");
     const updated = await userService.upsertUser(user.id, updates);
     setUserData(updated);
     return updated;
   };
+
   return (
-    <AuthContext.Provider value={{ user, userData, loading, signIn, signUp, signOut, updateProfile }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        userData,
+        loading,
+        isRecovery,
+        setIsRecovery,
+        signIn,
+        signUp,
+        signOut,
+        updateProfile,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
